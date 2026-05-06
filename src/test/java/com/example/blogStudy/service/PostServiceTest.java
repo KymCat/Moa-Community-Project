@@ -1,5 +1,6 @@
 package com.example.blogStudy.service;
 
+import com.example.blogStudy.dto.create.PostCreate;
 import com.example.blogStudy.dto.response.PostDetailResponse;
 import com.example.blogStudy.dto.response.PostResponse;
 import com.example.blogStudy.entity.Post;
@@ -111,10 +112,41 @@ class PostServiceTest {
                 .hasMessage(ErrorCode.POST_NOT_FOUND.getMessage());
     }
 
-//
-//    @Test
-//    void createPost() {
-//    }
+
+    @Test
+    @DisplayName("게시글 작성 성공")
+    void create_post_success() {
+        // given
+        PostCreate dto = new PostCreate(TITLE, CONTENT);
+        User user = defaultUser();
+        Post saved = defaultPost();
+        PostResponse expected = PostResponse.from(saved);
+
+        given(userRepository.findById(USER_ID)).willReturn(Optional.of(user));
+        given(postRepository.save(any(Post.class))).willReturn(saved);
+
+        // when
+        PostResponse result = postService.createPost(USER_ID, dto);
+
+        // then
+        assertThat(result)
+                .usingRecursiveComparison()
+                .isEqualTo(expected);
+    }
+
+    @Test
+    @DisplayName("게시글 작성 실패 - 존재하지 않는 userId")
+    void create_post_fail_not_found_user_id() {
+        // given
+        PostCreate dto = new PostCreate(TITLE, CONTENT);
+
+        given(userRepository.findById(USER_ID)).willReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> postService.createPost(USER_ID, dto))
+                .isInstanceOf(CustomException.class)
+                .hasMessage(ErrorCode.USER_NOT_FOUND.getMessage());
+    }
 //
 //    @Test
 //    void updatePost() {
