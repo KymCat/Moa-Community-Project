@@ -1,8 +1,11 @@
 package com.example.blogStudy.service;
 
+import com.example.blogStudy.dto.response.PostDetailResponse;
 import com.example.blogStudy.dto.response.PostResponse;
 import com.example.blogStudy.entity.Post;
 import com.example.blogStudy.entity.User;
+import com.example.blogStudy.exception.CustomException;
+import com.example.blogStudy.exception.ErrorCode;
 import com.example.blogStudy.repository.LikeRepository;
 import com.example.blogStudy.repository.PostRepository;
 import com.example.blogStudy.repository.UserRepository;
@@ -16,6 +19,7 @@ import org.springframework.data.domain.*;
 import org.springframework.data.web.PagedModel;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -74,10 +78,39 @@ class PostServiceTest {
                 .usingRecursiveComparison()
                 .isEqualTo(PostResponse.from(post));
     }
-//
-//    @Test
-//    void getPost() {
-//    }
+
+    @Test
+    @DisplayName("게시글 단일 조회 성공")
+    void get_post_success() {
+        // given
+        Post post = defaultPost();
+        int likeCount = 0;
+        PostDetailResponse expected = PostDetailResponse.from(post, likeCount);
+
+        given(postRepository.findById(ID)).willReturn(Optional.of(post));
+        given(likeRepository.countByPostId(ID)).willReturn(likeCount);
+
+        // when
+        PostDetailResponse result = postService.getPost(ID);
+
+        // then
+        assertThat(result)
+                .usingRecursiveComparison()
+                .isEqualTo(expected);
+    }
+
+    @Test
+    @DisplayName("게시글 단일 조회 실패 - 존재하지 않는 ID")
+    void get_post_fail_id_not_found() {
+        // given
+        given(postRepository.findById(ID)).willReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> postService.getPost(ID))
+                .isInstanceOf(CustomException.class)
+                .hasMessage(ErrorCode.POST_NOT_FOUND.getMessage());
+    }
+
 //
 //    @Test
 //    void createPost() {
