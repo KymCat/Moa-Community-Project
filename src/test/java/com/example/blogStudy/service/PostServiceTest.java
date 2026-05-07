@@ -22,9 +22,7 @@ import org.springframework.data.web.PagedModel;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.mockito.BDDMockito.*;
@@ -201,8 +199,45 @@ class PostServiceTest {
 
     }
 
-//
-//    @Test
-//    void deletePost() {
-//    }
+
+    @Test
+    @DisplayName("게시글 삭제 성공")
+    void delete_post_success() {
+        // given
+        Post post = defaultPost();
+
+        given(postRepository.findById(ID)).willReturn(Optional.of(post));
+
+        // when
+        postService.deletePost(USER_ID, ID);
+
+        // then
+        then(postRepository).should().delete(post);
+    }
+
+    @Test
+    @DisplayName("게시글 삭제 실패 - 존재하지 않는 게시글 ID")
+    void delete_post_fail_id_not_found() {
+        // given
+        given(postRepository.findById(ID)).willReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> postService.deletePost(USER_ID, ID))
+                .isInstanceOf(CustomException.class)
+                .hasMessage(ErrorCode.POST_NOT_FOUND.getMessage());
+    }
+
+    @Test
+    @DisplayName("게시글 삭제 실패 - 게시글 삭제 권한 없음")
+    void delete_post_fail_post_access_denied() {
+        // given
+        Post post = defaultPost();
+
+        given(postRepository.findById(ID)).willReturn(Optional.of(post));
+
+        // when & then
+        assertThatThrownBy(() ->  postService.deletePost("otherUser", ID))
+                .isInstanceOf(CustomException.class)
+                .hasMessage(ErrorCode.POST_ACCESS_DENIED.getMessage());
+    }
 }
