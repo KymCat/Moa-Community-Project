@@ -3,6 +3,7 @@ package com.example.blogStudy.service;
 import com.example.blogStudy.dto.create.PostCreate;
 import com.example.blogStudy.dto.response.PostDetailResponse;
 import com.example.blogStudy.dto.response.PostResponse;
+import com.example.blogStudy.dto.update.PostUpdate;
 import com.example.blogStudy.entity.Post;
 import com.example.blogStudy.entity.User;
 import com.example.blogStudy.exception.CustomException;
@@ -147,10 +148,59 @@ class PostServiceTest {
                 .isInstanceOf(CustomException.class)
                 .hasMessage(ErrorCode.USER_NOT_FOUND.getMessage());
     }
-//
-//    @Test
-//    void updatePost() {
-//    }
+
+    @Test
+    @DisplayName("게시글 수정 성공")
+    void update_post_success() {
+        // given
+        PostUpdate dto = new PostUpdate(TITLE + "Updated", CONTENT + "Updated");
+        Post post = Post.create(TITLE + "Updated", CONTENT + "Updated", defaultUser());
+        PostResponse expected = PostResponse.from(post);
+
+        given(postRepository.findById(ID)).willReturn(Optional.of(post));
+
+        // when
+        PostResponse result = postService.updatePost(USER_ID, ID, dto);
+
+        // then
+        assertThat(post.getTitle()).isEqualTo(dto.getTitle());
+        assertThat(post.getContent()).isEqualTo(dto.getContent());
+
+        assertThat(result)
+                .usingRecursiveComparison()
+                .isEqualTo(expected);
+    }
+
+    @Test
+    @DisplayName("게시글 수정 실패 - 존재하지 않는 게시글 ID")
+    void update_post_fail_id_not_found() {
+        // given
+        PostUpdate dto = new PostUpdate(TITLE + "Updated", CONTENT + "Updated");
+
+        given(postRepository.findById(ID)).willReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> postService.updatePost(USER_ID, ID, dto))
+                .isInstanceOf(CustomException.class)
+                .hasMessage(ErrorCode.POST_NOT_FOUND.getMessage());
+    }
+
+    @Test
+    @DisplayName("게시글 수정 실패 - 수정 권한 없음")
+    void update_post_fail_post_access_denied() {
+        // given
+        PostUpdate dto = new PostUpdate(TITLE + "Updated", CONTENT + "Updated");
+        Post post = Post.create(TITLE + "Updated", CONTENT + "Updated", defaultUser());
+
+        given(postRepository.findById(ID)).willReturn(Optional.of(post));
+
+        // when & then
+        assertThatThrownBy(() -> postService.updatePost("otherUser", ID, dto))
+                .isInstanceOf(CustomException.class)
+                .hasMessage(ErrorCode.POST_ACCESS_DENIED.getMessage());
+
+    }
+
 //
 //    @Test
 //    void deletePost() {
