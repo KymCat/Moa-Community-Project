@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Blog Home</title>
+
+    <link rel="icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script defer src="/js/theme.js"></script>
+    <script defer src="/js/api.js"></script>
+    <script defer src="/js/index.js"></script>
+</head>
+<body>
+
+<button id="themeToggle" class="theme-btn">🌙</button>
+
+<main class="auth-container">
+    <div class="page-layout">
+
+        <div class="user-menu">
+            <button id="userMenuButton" class="user-button">나</button>
+
+            <div id="userCard" class="user-card">
+                <p class="user-card-title">로그인 사용자</p>
+
+                <div class="user-info-row">
+                    <span>아이디</span>
+                    <strong id="userId">-</strong>
+                </div>
+
+                <div class="user-info-row">
+                    <span>별명</span>
+                    <strong id="userName">-</strong>
+                </div>
+
+                <button id="logoutButton" class="primary-btn user-logout-btn">
+                    로그아웃
+                </button>
+            </div>
+        </div>
+
+        <section class="auth-card post-section">
+            <h1>게시글</h1>
+
+            <div id="postList" class="post-list"></div>
+            <div id="pagination" class="pagination"></div>
+        </section>
+
+    </div>
+</main>
+
+</body>
+</html>

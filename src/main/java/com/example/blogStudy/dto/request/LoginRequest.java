@@ -19,7 +19,7 @@ public class LoginRequest {
     @Size(min = 8, max = 15, message = "비밀번호는 8자 이상 15자 이하로 입력해주세요.")
     @Pattern(
             regexp = "^(?=.*[a-zA-Z])(?=.*\\d)[a-zA-Z\\d!@#$%^&*()_+=-]+$",
-            message = "비밀번호에 공백은 포함될 수 없습니다."
+            message = "비밀번호는 공백 없이 영문자와 숫자를 각각 1개 이상 포함해야 합니다."
     )
     private final String password;
 }

@@ -4,10 +4,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestCookieException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.List;
 
 @Slf4j
 @RestControllerAdvice   // 프로젝트 전체 Controller 에서 발생하는 예외 처리 클래스
@@ -35,17 +38,23 @@ public class GlobalExceptionHandler {
             HttpServletRequest request)
     {
         log.warn("DTO 검증 예외 path = {}", request.getRequestURI());
-        String message = e.getBindingResult()
-                .getFieldErrors()
-                .get(0)
-                .getDefaultMessage();
+//        String message = e.getBindingResult()
+//                .getFieldErrors()
+//                .get(0)
+//                .getDefaultMessage();
+
+        List<FieldError> errors = e.getBindingResult().getFieldErrors();
+        StringBuilder messages = new StringBuilder();
+        for (FieldError error : errors) {
+            messages.append(error.getDefaultMessage()).append("\n");
+        }
 
         return ResponseEntity
                 .status(400)
                 .body(ErrorResponse.of(
                         400,
                         ErrorCode.INVALID_INPUT_VALUE.getCode(),
-                        message,
+                        messages.toString(),
                         request.getRequestURI()));
     }
 

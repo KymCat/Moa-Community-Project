@@ -32,6 +32,12 @@ public class UserController {
         return userService.getUserById(id);
     }
 
+    // 로그인한 본인 정보 조회
+    @GetMapping("/users/me")
+    public UserResponse getMe(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        return userService.getMe(userDetails.getUserId());
+    }
+
     // 유저 계정 생성
     @PostMapping("/users")
     public ResponseEntity<UserResponse> createUser(@Valid @RequestBody UserCreate dto) {

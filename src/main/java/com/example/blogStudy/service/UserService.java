@@ -38,6 +38,14 @@ public class UserService {
         return UserResponse.from(user);
     }
 
+    // 로그인한 본인 정보 조회
+    public UserResponse getMe(String id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        return UserResponse.from(user);
+    }
+
     // 유저 계정 생성
     @Transactional
     public UserResponse createUser(UserCreate dto) {
@@ -92,5 +100,4 @@ public class UserService {
 
         userRepository.delete(user);
     }
-
 }

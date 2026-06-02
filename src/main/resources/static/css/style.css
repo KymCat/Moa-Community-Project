@@ -1,0 +1,285 @@
+:root {
+    --bg-color: #f5f6fa;
+    --card-color: #ffffff;
+    --text-color: #222222;
+    --description-color: #666666;
+    --input-bg: #ffffff;
+    --input-border: #dddddd;
+    --primary-color: #4f46e5;
+    --primary-hover: #4338ca;
+    --secondary-color: #e5e7eb;
+    --danger-color: #ef4444;
+}
+
+body.dark {
+    --bg-color: #111827;
+    --card-color: #1f2937;
+    --text-color: #f9fafb;
+    --description-color: #d1d5db;
+    --input-bg: #374151;
+    --input-border: #4b5563;
+    --primary-color: #6366f1;
+    --primary-hover: #818cf8;
+    --secondary-color: #374151;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: var(--bg-color);
+    color: var(--text-color);
+    transition: background 0.2s, color 0.2s;
+}
+
+.auth-container {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.page-layout {
+    width: 800px;
+    max-width: 90%;
+}
+
+.page-layout .auth-card {
+    width: 100%;
+}
+
+.auth-card {
+    width: 400px;
+    padding: 32px;
+    border-radius: 16px;
+    background: var(--card-color);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.auth-card h1 {
+    margin: 0 0 24px;
+    text-align: center;
+}
+
+.description {
+    text-align: center;
+    color: var(--description-color);
+    margin-bottom: 24px;
+}
+
+input {
+    width: 100%;
+    padding: 14px;
+    margin-bottom: 12px;
+    border: 1px solid var(--input-border);
+    border-radius: 8px;
+    background: var(--input-bg);
+    color: var(--text-color);
+    font-size: 15px;
+}
+
+button {
+    cursor: pointer;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+}
+
+.primary-btn {
+    width: 100%;
+    padding: 14px;
+    background: var(--primary-color);
+    color: white;
+}
+
+.primary-btn:hover {
+    background: var(--primary-hover);
+}
+
+.secondary-btn {
+    width: 100%;
+    padding: 14px;
+    margin-top: 10px;
+    background: var(--secondary-color);
+    color: var(--text-color);
+}
+
+.theme-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 10px 14px;
+    background: var(--card-color);
+    color: var(--text-color);
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15);
+    z-index: 10;
+}
+
+.message {
+    width: 100%;
+    white-space: pre-line;
+    text-align: center;
+    margin-top: 16px;
+    font-size: 14px;
+    color: var(--danger-color);
+}
+
+/* 사용자 메뉴 전체 */
+.user-menu {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+/* "나" 원형 버튼 */
+.user-button {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: 700;
+    font-size: 16px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+    transition:
+            transform 0.2s ease,
+            background-color 0.2s ease;
+}
+
+.user-button:hover {
+    transform: translateY(-2px) scale(1.05);
+}
+
+body.dark .user-button {
+    background-color: #8b8fff;
+}
+
+/* 사용자 카드 */
+.user-card {
+    width: 100%;
+    margin-top: 16px;
+    padding: 0 16px;
+    border-radius: 16px;
+    background-color: var(--card-color);
+    color: var(--text-color);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transform: translateY(-8px);
+
+    transition:
+            max-height 0.3s ease,
+            opacity 0.25s ease,
+            transform 0.25s ease,
+            padding 0.25s ease;
+}
+
+.user-card.active {
+    max-height: 280px;
+    opacity: 1;
+    padding: 16px;
+    transform: translateY(0);
+}
+
+.user-card-title {
+    margin: 0 0 12px;
+    font-size: 14px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.user-info-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+.user-info-row span {
+    color: var(--description-color);
+}
+
+.user-info-row strong {
+    color: var(--text-color);
+}
+
+.user-logout-btn {
+    margin-top: 16px;
+}
+
+/* 게시글 css */
+.post-section {
+    margin-top: 24px;
+}
+
+.post-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.post-card {
+    padding: 20px;
+    border-radius: 12px;
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+}
+
+.post-card h2 {
+    margin: 0 0 8px;
+    font-size: 18px;
+}
+
+.post-card p {
+    margin: 0 0 12px;
+    color: var(--description-color);
+}
+
+.post-card span {
+    font-size: 12px;
+    color: var(--description-color);
+}
+
+/* 페이지 */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.pagination button {
+    padding: 8px 12px;
+    background: var(--secondary-color);
+    color: var(--text-color);
+}
+
+.pagination button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.post-meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 12px;
+    font-size: 12px;
+    color: var(--description-color);
+}
+
+.edit-post-btn {
+    margin-top: 12px;
+    padding: 8px 12px;
+    background: var(--primary-color);
+    color: white;
+    border-radius: 8px;
+}
