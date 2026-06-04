@@ -41,14 +41,54 @@
         </div>
 
         <section class="auth-card post-section">
-            <h1>게시글</h1>
+            <div class="post-header">
+                <h1>게시글</h1>
+
+                <button id="openPostModalButton" class="write-post-btn">
+                    ✏️
+                    <span class="tooltip">글쓰기</span>
+                </button>
+            </div>
 
             <div id="postList" class="post-list"></div>
+
             <div id="pagination" class="pagination"></div>
         </section>
 
     </div>
 </main>
 
+<div id="postModalOverlay" class="modal-overlay">
+    <div class="post-modal">
+        <h2>게시글 작성</h2>
+
+        <form id="postCreateForm">
+            <input
+                    id="postTitle"
+                    type="text"
+                    placeholder="제목을 입력하세요"
+                    maxlength="100"
+            >
+
+            <textarea
+                    id="postContent"
+                    placeholder="내용을 입력하세요"
+                    maxlength="6000"
+            ></textarea>
+
+            <p id="postCreateMessage" class="message"></p>
+
+            <div class="modal-buttons">
+                <button type="button" id="closePostModalButton" class="secondary-btn">
+                    취소
+                </button>
+
+                <button type="submit" class="primary-btn">
+                    등록
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
 </body>
 </html>

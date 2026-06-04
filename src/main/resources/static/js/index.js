@@ -3,9 +3,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     initUserMenu();
     initLogoutButton();
+    initPostCreateModal();
 
     await loadUserInfo();
     await loadPosts();
+
 });
 
 async function checkLogin() {
@@ -71,19 +73,22 @@ async function loadPosts(page = 0) {
                 <article class="post-card">
                     <h2>${post.title}</h2>
                     <p>${post.content}</p>
-
-                    <div class="post-meta">
-                        <span>작성자: ${post.name}</span>
-                        <span>${formatDate(post.createdAt)}</span>
+            
+                    <div class="post-footer">
+                        <span class="post-writer">작성자: ${post.name}</span>
+            
+                        <div class="post-right">
+                            ${
+                            post.userId === currentUserId
+                                ? `<button class="edit-post-btn" data-post-id="${post.id}">
+                                           수정
+                                       </button>`
+                                : ""
+                        }
+            
+                            <span class="post-date">${formatDate(post.createdAt)}</span>
+                        </div>
                     </div>
-
-                    ${
-                post.userId === currentUserId
-                    ? `<button class="edit-post-btn" data-post-id="${post.id}">
-                                   수정
-                               </button>`
-                    : ""
-            }
                 </article>
             `).join("");
         }
@@ -169,4 +174,60 @@ function formatDate(dateString) {
     const minute = String(date.getMinutes()).padStart(2, "0");
 
     return `${year}년 ${month}월 ${day}일 ${hour}:${minute}`;
+}
+
+function initPostCreateModal() {
+    const openButton = document.getElementById("openPostModalButton");
+    const closeButton = document.getElementById("closePostModalButton");
+    const overlay = document.getElementById("postModalOverlay");
+    const form = document.getElementById("postCreateForm");
+    const titleInput = document.getElementById("postTitle");
+    const contentInput = document.getElementById("postContent");
+    const message = document.getElementById("postCreateMessage");
+
+    openButton.addEventListener("click", () => {
+        overlay.classList.add("active");
+        message.textContent = "";
+        titleInput.focus();
+    });
+
+    closeButton.addEventListener("click", () => {
+        closePostModal();
+    });
+
+    overlay.addEventListener("click", (event) => {
+        if (event.target === overlay) {
+            closePostModal();
+        }
+    });
+
+    form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const title = titleInput.value.trim();
+        const content = contentInput.value.trim();
+
+        try {
+            await requestApi("/posts", {
+                method: "POST",
+                body: JSON.stringify({
+                    title,
+                    content,
+                }),
+            });
+
+            closePostModal();
+
+            await loadPosts(0);
+        } catch (error) {
+            console.error("게시글 작성 실패:", error);
+            message.textContent = error.message ?? "게시글 작성에 실패했습니다.";
+        }
+    });
+
+    function closePostModal() {
+        overlay.classList.remove("active");
+        form.reset();
+        message.textContent = "";
+    }
 }
