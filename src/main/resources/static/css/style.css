@@ -160,7 +160,8 @@ body.dark .user-button {
 
 /* 사용자 카드 */
 .user-card {
-    width: 100%;
+    min-width: 300px;
+    max-width: 350px;
     margin-top: 16px;
     padding: 0 16px;
     border-radius: 16px;
@@ -282,4 +283,15 @@ body.dark .user-button {
     background: var(--primary-color);
     color: white;
     border-radius: 8px;
+}
+
+.post-list {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.post-list.loading {
+    opacity: 0;
+    transform: translateY(10px);
 }

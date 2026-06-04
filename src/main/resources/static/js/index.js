@@ -55,44 +55,49 @@ async function loadPosts(page = 0) {
     const postList = document.getElementById("postList");
 
     try {
-        const data = await requestApi(`/posts?page=${page}&size=5`);
+        postList.classList.add("loading");
 
-        console.log("게시글 응답:", data);
+        await new Promise(resolve => setTimeout(resolve, 200));
+
+        const data = await requestApi(`/posts?page=${page}&size=5`);
 
         const posts = data.content ?? [];
         const pageInfo = data.page;
 
         if (posts.length === 0) {
             postList.innerHTML = `<p class="description">게시글이 없습니다.</p>`;
-            renderPagination(pageInfo);
-            return;
+        } else {
+            postList.innerHTML = posts.map(post => `
+                <article class="post-card">
+                    <h2>${post.title}</h2>
+                    <p>${post.content}</p>
+
+                    <div class="post-meta">
+                        <span>작성자: ${post.name}</span>
+                        <span>${formatDate(post.createdAt)}</span>
+                    </div>
+
+                    ${
+                post.userId === currentUserId
+                    ? `<button class="edit-post-btn" data-post-id="${post.id}">
+                                   수정
+                               </button>`
+                    : ""
+            }
+                </article>
+            `).join("");
         }
 
-        postList.innerHTML = posts.map(post => `
-            <article class="post-card">
-                <h2>${post.title}</h2>
-                <p>${post.content}</p>
-        
-                <div class="post-meta">
-                    <span>작성자: ${post.name}</span>
-                    <span>${post.createdAt}</span>
-                </div>
-        
-                ${
-                    post.userId === currentUserId
-                        ? `<button class="edit-post-btn" data-post-id="${post.id}">
-                               수정
-                           </button>`
-                        : ""
-                }
-            </article>
-        `).join("");
-
         renderPagination(pageInfo);
+
+        requestAnimationFrame(() => {
+            postList.classList.remove("loading");
+        });
 
     } catch (error) {
         console.error("게시글 조회 실패:", error);
         postList.innerHTML = `<p class="message">게시글을 불러오지 못했습니다.</p>`;
+        postList.classList.remove("loading");
     }
 }
 
@@ -151,4 +156,17 @@ function renderPagination(pageInfo) {
     document.getElementById("nextPage").addEventListener("click", () => {
         loadPosts(pageInfo.number + 1);
     });
+}
+
+function formatDate(dateString) {
+    const date = new Date(dateString);
+
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+
+    const hour = String(date.getHours()).padStart(2, "0");
+    const minute = String(date.getMinutes()).padStart(2, "0");
+
+    return `${year}년 ${month}월 ${day}일 ${hour}:${minute}`;
 }
