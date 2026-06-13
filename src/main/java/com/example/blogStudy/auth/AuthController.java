@@ -4,6 +4,7 @@ import com.example.blogStudy.dto.request.LoginRequest;
 import com.example.blogStudy.exception.CustomException;
 import com.example.blogStudy.exception.ErrorCode;
 import com.example.blogStudy.jwt.JwtTokenResult;
+import com.example.blogStudy.security.CustomUserDetails;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -40,17 +42,14 @@ public class AuthController {
     // 로그아웃
     @PostMapping("/auth/logout")
     public ResponseEntity<Void> logout(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @CookieValue(name = "refreshToken") String refreshToken,
             HttpServletRequest request)
     {
 
-        String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (authHeader == null || !authHeader.startsWith("Bearer "))
-            throw new CustomException(ErrorCode.INVALID_AUTH_HEADER);
+        String accessToken  = extractBearerToken(request);
 
-        String accessToken = authHeader.substring(7);
-
-        authService.logout(accessToken, refreshToken);
+        authService.logout(userDetails.getUserId(), accessToken, refreshToken);
         ResponseCookie cookie = ResponseCookie.from("refreshToken", "")
                 .httpOnly(true)
                 .secure(true)
@@ -92,5 +91,14 @@ public class AuthController {
                 .maxAge(Duration.ofMillis(result.getRefreshTokenExpiration()))
                 .sameSite("Lax")
                 .build();
+    }
+
+    // Authorization 헤더에서 토큰 추출
+    private String extractBearerToken(HttpServletRequest request) {
+        String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+        if (authHeader == null || !authHeader.startsWith("Bearer "))
+            throw new CustomException(ErrorCode.INVALID_AUTH_HEADER);
+
+        return authHeader.substring(7);
     }
 }
