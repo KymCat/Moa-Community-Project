@@ -7,9 +7,11 @@ import com.example.blogStudy.exception.ErrorCode;
 import com.example.blogStudy.jwt.JwtProperties;
 import com.example.blogStudy.jwt.JwtProvider;
 import com.example.blogStudy.jwt.JwtTokenResult;
+import com.example.blogStudy.jwt.JwtTokenType;
 import com.example.blogStudy.jwt.redis.BlacklistTokenService;
 import com.example.blogStudy.repository.UserRepository;
 import com.example.blogStudy.jwt.redis.RefreshTokenService;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -76,11 +78,11 @@ public class AuthService {
     public JwtTokenResult reissue(String token) {
 
         // 1. refresh token 검증
-        jwtProvider.validateToken(token);
+        Claims claims = jwtProvider.validateRefreshToken(token);
 
         // 2. dto 데이터에서 user id 추출
-        String userId = jwtProvider.getUserId(token);
-        String nickname = jwtProvider.getNickname(token);
+        String userId = claims.getSubject();
+        String nickname = claims.get("nickname", String.class);
 
         // 3. redis refresh token 과 비교
         if(Boolean.FALSE.equals(refreshTokenService.isValid(userId, token)))
