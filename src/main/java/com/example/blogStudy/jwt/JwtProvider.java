@@ -20,6 +20,9 @@ public class JwtProvider {
     private final JwtProperties jwtProperties;
     private SecretKey key;
 
+    private static final String NICKNAME = "nickname";
+    private static final String TOKEN_TYPE = "token_type";
+
     public JwtProvider(JwtProperties jwtProperties) {
         this.jwtProperties = jwtProperties;
     }
@@ -43,7 +46,8 @@ public class JwtProvider {
 
         return Jwts.builder()
                 .subject(userId)
-                .claim("nickname", userName)
+                .claim(NICKNAME, userName)
+                .claim(TOKEN_TYPE, JwtTokenType.ACCESS.name())  // Token type - Access Token
                 .issuedAt(now)              // iat, 발급일자
                 .expiration(expiration)     // exp, 만료일자
                 .signWith(key)              // key 를 비밀키로 서명
@@ -59,6 +63,7 @@ public class JwtProvider {
 
         return Jwts.builder()
                 .subject(userId)            // token 주인 표시
+                .claim(TOKEN_TYPE, JwtTokenType.REFRESH.name()) // Token type - Refresh Token
                 .issuedAt(now)              // iat, 발급일자
                 .expiration(expiration)     // exp, 만료일자
                 .signWith(key)              // key 를 비밀키로 서명
@@ -81,7 +86,7 @@ public class JwtProvider {
 
     // token 안에서 nickname 반환
     public String getNickname(String token) {
-        return getClaims(token).get("nickname", String.class);
+        return getClaims(token).get(NICKNAME, String.class);
     }
 
     // access token 남은 시간 반환
@@ -97,10 +102,27 @@ public class JwtProvider {
         return jwtProperties.getRefreshTokenExpiration() / 1000;
     }
 
+    // AccessToken 검증
+    public Claims validateAccessToken(String token) {
+        return validateToken(token, JwtTokenType.ACCESS.name());
+    }
+
+    // RefreshToken 검증
+    public Claims validateRefreshToken(String token) {
+        return validateToken(token, JwtTokenType.REFRESH.name());
+    }
+
     // 토큰 검증
-    public void validateToken(String token) {
+    public Claims validateToken(String token, String tokenType) {
         try {
-            getClaims(token);
+            Claims claims = getClaims(token);
+            String expectedTokenType = claims.get(TOKEN_TYPE, String.class);
+
+            if (!expectedTokenType.equals(tokenType)) {
+                throw new CustomException(ErrorCode.INVALID_TOKEN_TYPE);
+            }
+
+            return claims;
 
         } catch (ExpiredJwtException e) {
             throw new CustomException(ErrorCode.EXPIRED_TOKEN);

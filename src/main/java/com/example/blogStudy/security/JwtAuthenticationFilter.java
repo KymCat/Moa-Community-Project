@@ -4,6 +4,7 @@ import com.example.blogStudy.exception.CustomException;
 import com.example.blogStudy.exception.ErrorCode;
 import com.example.blogStudy.jwt.JwtProvider;
 import com.example.blogStudy.jwt.redis.BlacklistTokenService;
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -54,10 +55,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 throw new CustomException(ErrorCode.BLACKLISTED_TOKEN);
 
             // 유효한 액세스 토큰인지 확인
-            jwtProvider.validateToken(accessToken);
+            Claims claims = jwtProvider.validateAccessToken(accessToken);
 
-            String userId = jwtProvider.getUserId(accessToken);
-            String nickname = jwtProvider.getNickname(accessToken);
+            String userId = claims.getSubject();
+            String nickname = claims.get("nickname").toString();
 
             CustomUserDetails customUserDetails = new CustomUserDetails(userId, nickname);
 

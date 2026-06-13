@@ -16,8 +16,8 @@ public class BlacklistTokenService {
     // access 토큰 블랙리스트 등록
     public void saveBlackList(String accessToken) {
         stringRedisTemplate.opsForValue().set(
-                accessToken,
-                "Blacklist",
+                "Blacklist:" + accessToken,
+                "true",
                 jwtProvider.getRemainingTime(accessToken),
                 TimeUnit.MILLISECONDS
         );

@@ -7,9 +7,11 @@ import com.example.blogStudy.exception.ErrorCode;
 import com.example.blogStudy.jwt.JwtProperties;
 import com.example.blogStudy.jwt.JwtProvider;
 import com.example.blogStudy.jwt.JwtTokenResult;
+import com.example.blogStudy.jwt.JwtTokenType;
 import com.example.blogStudy.jwt.redis.BlacklistTokenService;
 import com.example.blogStudy.repository.UserRepository;
 import com.example.blogStudy.jwt.redis.RefreshTokenService;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -60,14 +62,22 @@ public class AuthService {
 
     // 로그아웃
     @Transactional
-    public void logout(String accessToken, String refreshToken) {
-        try {
-            String userId = jwtProvider.getUserId(refreshToken);
+    public void logout(String userId, String accessToken, String refreshToken) {
+        Claims refreshClaims = jwtProvider.validateRefreshToken(refreshToken);
+        String refreshUserId = refreshClaims.getSubject();
 
-            refreshTokenService.delete(userId);
-            blacklistTokenService.saveBlackList(accessToken);
+        // 현재 로그인한 id 와 각 토큰에서 추출한 id 비교
+        if (!userId.equals(refreshUserId)) {
+            throw new CustomException(ErrorCode.INVALID_TOKEN_OWNER);
         }
-        catch (ExpiredJwtException e) { return; }
+
+        // RefreshToken 유효성 검사
+        if (Boolean.FALSE.equals(refreshTokenService.isValid(userId, refreshToken))) {
+            throw new CustomException(ErrorCode.INVALID_TOKEN);
+        }
+
+        refreshTokenService.delete(userId);
+        blacklistTokenService.saveBlackList(accessToken);
     }
 
 
@@ -76,11 +86,11 @@ public class AuthService {
     public JwtTokenResult reissue(String token) {
 
         // 1. refresh token 검증
-        jwtProvider.validateToken(token);
+        Claims claims = jwtProvider.validateRefreshToken(token);
 
         // 2. dto 데이터에서 user id 추출
-        String userId = jwtProvider.getUserId(token);
-        String nickname = jwtProvider.getNickname(token);
+        String userId = claims.getSubject();
+        String nickname = claims.get("nickname", String.class);
 
         // 3. redis refresh token 과 비교
         if(Boolean.FALSE.equals(refreshTokenService.isValid(userId, token)))
