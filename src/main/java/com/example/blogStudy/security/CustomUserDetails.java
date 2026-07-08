@@ -13,8 +13,6 @@ import java.util.List;
 @AllArgsConstructor
 public class CustomUserDetails implements UserDetails {
     private final String userId;
-    private final String nickname;
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(); // role

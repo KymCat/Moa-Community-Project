@@ -20,7 +20,6 @@ public class JwtProvider {
     private final JwtProperties jwtProperties;
     private SecretKey key;
 
-    private static final String NICKNAME = "nickname";
     private static final String TOKEN_TYPE = "token_type";
 
     public JwtProvider(JwtProperties jwtProperties) {
@@ -39,14 +38,13 @@ public class JwtProvider {
 
 
     // 사용자 Id를 받아서 Access Token 문자열을 만들어 반환
-    public String createAccessToken(String userId, String userName) {
+    public String createAccessToken(String userId) {
         Date now = new Date();  // 현재 시간
         Date expiration = new Date( // 현재 시간 + Access Token 만료 시간
                 now.getTime() + jwtProperties.getAccessTokenExpiration());
 
         return Jwts.builder()
                 .subject(userId)
-                .claim(NICKNAME, userName)
                 .claim(TOKEN_TYPE, JwtTokenType.ACCESS.name())  // Token type - Access Token
                 .issuedAt(now)              // iat, 발급일자
                 .expiration(expiration)     // exp, 만료일자
@@ -82,11 +80,6 @@ public class JwtProvider {
     // token 안에서 userId 반환
     public String getUserId(String token) {
         return getClaims(token).getSubject();
-    }
-
-    // token 안에서 nickname 반환
-    public String getNickname(String token) {
-        return getClaims(token).get(NICKNAME, String.class);
     }
 
     // access token 남은 시간 반환

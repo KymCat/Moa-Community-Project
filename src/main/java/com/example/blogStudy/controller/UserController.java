@@ -53,7 +53,7 @@ public class UserController {
     public ResponseEntity<Void> updatePassword(@Valid @RequestBody PasswordUpdate dto,
                                                @AuthenticationPrincipal CustomUserDetails userDetails)
     {
-        String id = userDetails.getUsername();
+        String id = userDetails.getUserId();
         userService.updatePassword(id, dto);
 
         return ResponseEntity.noContent().build();

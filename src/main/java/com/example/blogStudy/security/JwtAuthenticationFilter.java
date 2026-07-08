@@ -58,9 +58,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             Claims claims = jwtProvider.validateAccessToken(accessToken);
 
             String userId = claims.getSubject();
-            String nickname = claims.get("nickname").toString();
 
-            CustomUserDetails customUserDetails = new CustomUserDetails(userId, nickname);
+            CustomUserDetails customUserDetails = new CustomUserDetails(userId);
 
             // Authentication 객체 생성
             UsernamePasswordAuthenticationToken authentication =
