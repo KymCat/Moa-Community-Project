@@ -24,6 +24,9 @@ public enum ErrorCode {
     COMMENT_NOT_FOUND   (HttpStatus.NOT_FOUND, "COMMENT-001", "해당 댓글을 찾을 수 없습니다."),
     COMMENT_FORBIDDEN   (HttpStatus.FORBIDDEN, "COMMENT-002", "해당 댓글에 대한 권한이 없습니다."),
 
+    // Like Exception
+    DUPLICATE_LIKE      (HttpStatus.CONFLICT, "LIKE-001", "이미 좋아요를 누른 게시글입니다."),
+
     // Jwt Exception
     INVALID_TOKEN       (HttpStatus.UNAUTHORIZED, "JWT-001", "유효하지 않은 토큰 입니다."),
     BLACKLISTED_TOKEN   (HttpStatus.UNAUTHORIZED, "JWT-002", "블랙 리스트에 지정된 토큰입니다."),
