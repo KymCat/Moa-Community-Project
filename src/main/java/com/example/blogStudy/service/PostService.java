@@ -59,6 +59,8 @@ public class PostService {
     // 게시글 수정
     @Transactional
     public PostResponse updatePost(String userId, Long id, PostUpdate dto) {
+        validatePostUpdate(dto);
+
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
 
@@ -79,6 +81,24 @@ public class PostService {
             throw new CustomException(ErrorCode.POST_ACCESS_DENIED);
 
         postRepository.delete(post);
+    }
+
+    /*
+        필드 전체 Null
+        필드 한쪽 공백,빈 문자열 검증 함수
+     */
+    private void validatePostUpdate(PostUpdate dto) {
+        if (dto.getTitle() == null && dto.getContent() == null) {
+            throw new CustomException(ErrorCode.INVALID_INPUT_VALUE);
+        }
+
+        if (dto.getTitle() != null && dto.getTitle().isBlank()) {
+            throw new CustomException(ErrorCode.INVALID_INPUT_VALUE);
+        }
+
+        if (dto.getContent() != null && dto.getContent().isBlank()) {
+            throw new CustomException(ErrorCode.INVALID_INPUT_VALUE);
+        }
     }
 
 }
