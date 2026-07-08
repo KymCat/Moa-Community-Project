@@ -118,7 +118,7 @@ public class JwtProvider {
             Claims claims = getClaims(token);
             String expectedTokenType = claims.get(TOKEN_TYPE, String.class);
 
-            if (!expectedTokenType.equals(tokenType)) {
+            if (!tokenType.equals(expectedTokenType)) {
                 throw new CustomException(ErrorCode.INVALID_TOKEN_TYPE);
             }
 
