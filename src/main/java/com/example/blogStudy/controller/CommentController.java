@@ -60,7 +60,7 @@ public class CommentController {
 
     // 댓글 삭제
     @DeleteMapping("/comments/{id}")
-    public ResponseEntity<CommentResponse> deleteComment(@AuthenticationPrincipal CustomUserDetails userDetails,
+    public ResponseEntity<Void> deleteComment(@AuthenticationPrincipal CustomUserDetails userDetails,
                                                          @PathVariable Long id) {
 
         String userId = userDetails.getUserId();

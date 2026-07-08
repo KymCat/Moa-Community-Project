@@ -66,7 +66,7 @@ public class PostController {
 
     // 게시글 삭제
     @DeleteMapping("/posts/{id}")
-    public ResponseEntity<PostResponse> deletePost(@AuthenticationPrincipal CustomUserDetails userDetails,
+    public ResponseEntity<Void> deletePost(@AuthenticationPrincipal CustomUserDetails userDetails,
                                                    @PathVariable Long id) {
         String userId = userDetails.getUserId();
         postService.deletePost(userId, id);

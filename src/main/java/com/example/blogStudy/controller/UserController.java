@@ -73,7 +73,7 @@ public class UserController {
 
     // 유저 계정 탈퇴
     @DeleteMapping("/users/me")
-    public ResponseEntity<UserResponse> deleteUser(@AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ResponseEntity<Void> deleteUser(@AuthenticationPrincipal CustomUserDetails userDetails) {
 
         String id = userDetails.getUserId();
         userService.deleteUser(id);
