@@ -21,3 +21,5 @@ spring:
             hibernate:
                 format_sql: true
         show-sql: true
+cookie:
+    secure: ${COOKIE_SECURE:false}
