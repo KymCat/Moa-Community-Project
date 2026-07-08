@@ -56,7 +56,7 @@ public class AuthController {
         authService.logout(userDetails.getUserId(), accessToken, refreshToken);
         ResponseCookie cookie = ResponseCookie.from("refreshToken", "")
                 .httpOnly(true)
-                .secure(true)
+                .secure(cookieSecure)
                 .path("/")
                 .maxAge(0)
                 .sameSite("Lax")
