@@ -10,8 +10,11 @@ import com.example.blogStudy.repository.PostRepository;
 import com.example.blogStudy.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class LikeService {
@@ -34,8 +37,19 @@ public class LikeService {
         Post post =  postRepository.findById(postId)
                 .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
 
-        Like like = Like.create(user, post);
-        likeRepository.save(like);
+        // 중복 처리
+        if (likeRepository.existsByUserIdAndPostId(userId, postId)) {
+            throw new CustomException(ErrorCode.DUPLICATE_LIKE);
+        }
+
+        try {
+            Like like = Like.create(user, post);
+            likeRepository.save(like);
+
+        } catch (DataIntegrityViolationException e) {
+            log.warn("Concurrent duplicate like request. userId={}, postId={}", userId, postId);
+            throw new CustomException(ErrorCode.DUPLICATE_LIKE);
+        }
     }
 
 }
