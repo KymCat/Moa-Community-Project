@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +26,9 @@ import java.time.Duration;
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthService authService;
+
+    @Value("${cookie.secure}")
+    private boolean cookieSecure;
 
     // 로그인
     @PostMapping("/auth/login")
@@ -82,11 +86,9 @@ public class AuthController {
     // Refresh Token Cookie 설정
     private ResponseCookie refreshTokenCookie(JwtTokenResult result) {
 
-        boolean isProduction = false;   // 로컬 개발, 운영 환경에서는 true 로 변경
-
         return ResponseCookie.from("refreshToken", result.getRefreshToken())
                 .httpOnly(true)
-                .secure(isProduction)
+                .secure(cookieSecure)
                 .path("/")
                 .maxAge(Duration.ofMillis(result.getRefreshTokenExpiration()))
                 .sameSite("Lax")
