@@ -9,12 +9,15 @@ import com.example.blogStudy.exception.CustomException;
 import com.example.blogStudy.exception.ErrorCode;
 import com.example.blogStudy.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -49,12 +52,16 @@ public class UserService {
     // 유저 계정 생성
     @Transactional
     public UserResponse createUser(UserCreate dto) {
-        if(userRepository.existsById(dto.getId()))
-            throw new CustomException(ErrorCode.DUPLICATE_USER_ID);
-
         String bcryptPassword = passwordEncoder.encode(dto.getPassword());
-        User saved = userRepository.save(dto.toEntity(bcryptPassword));
-        return UserResponse.from(saved);
+        User user = dto.toEntity(bcryptPassword);
+
+        try {
+            User saved = userRepository.saveAndFlush(user); // try 문에서 flush 발생시키기
+            return UserResponse.from(saved);
+        } catch (DataIntegrityViolationException e) {
+            log.warn("Concurrent duplicate create userId = {}", dto.getId());
+            throw new CustomException(ErrorCode.DUPLICATE_USER_ID);
+        }
     }
 
     // 현재 유저 비밀번호 수정
