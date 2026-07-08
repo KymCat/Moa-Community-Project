@@ -90,7 +90,9 @@ public class AuthService {
 
         // 2. dto 데이터에서 user id 추출
         String userId = claims.getSubject();
-        String nickname = claims.get("nickname", String.class);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        String nickname = user.getName();
 
         // 3. redis refresh token 과 비교
         if(Boolean.FALSE.equals(refreshTokenService.isValid(userId, token)))
