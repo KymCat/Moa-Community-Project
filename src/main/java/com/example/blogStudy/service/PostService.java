@@ -11,7 +11,7 @@ import com.example.blogStudy.exception.ErrorCode;
 import com.example.blogStudy.repository.LikeRepository;
 import com.example.blogStudy.repository.PostRepository;
 import com.example.blogStudy.repository.UserRepository;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
@@ -35,6 +35,7 @@ public class PostService {
     }
 
     // 게시글 단일 조회
+    @Transactional(readOnly = true)
     public PostDetailResponse getPost(Long id) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
