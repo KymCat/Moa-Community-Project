@@ -9,6 +9,9 @@
 
     <script defer src="/js/theme.js"></script>
     <script defer src="/js/api.js"></script>
+    <script defer src="/js/ui.js"></script>
+    <script defer src="/js/auth.js"></script>
+    <script defer src="/js/posts.js"></script>
     <script defer src="/js/index.js"></script>
 </head>
 <body>
@@ -37,6 +40,14 @@
                 <button id="logoutButton" class="primary-btn user-logout-btn">
                     로그아웃
                 </button>
+
+                <button id="openAccountModalButton" class="secondary-btn user-action-btn">
+                    회원 정보 수정
+                </button>
+
+                <button id="deleteAccountButton" class="danger-btn user-action-btn">
+                    회원 탈퇴
+                </button>
             </div>
         </div>
 
@@ -45,7 +56,7 @@
                 <h1>게시글</h1>
 
                 <button id="openPostModalButton" class="write-post-btn">
-                    ✏️
+                    +
                     <span class="tooltip">글쓰기</span>
                 </button>
             </div>
@@ -60,21 +71,25 @@
 
 <div id="postModalOverlay" class="modal-overlay">
     <div class="post-modal">
-        <h2>게시글 작성</h2>
+        <h2 id="postModalTitle">게시글 작성</h2>
 
         <form id="postCreateForm">
+            <input id="postId" type="hidden">
+
             <input
                     id="postTitle"
                     type="text"
                     placeholder="제목을 입력하세요"
                     maxlength="100"
             >
+            <div id="postTitleCount" class="char-count">0 / 100</div>
 
             <textarea
                     id="postContent"
                     placeholder="내용을 입력하세요"
                     maxlength="6000"
             ></textarea>
+            <div id="postContentCount" class="char-count">0 / 6000</div>
 
             <p id="postCreateMessage" class="message"></p>
 
@@ -84,10 +99,38 @@
                 </button>
 
                 <button type="submit" class="primary-btn">
-                    등록
+                    저장
                 </button>
             </div>
         </form>
+    </div>
+</div>
+
+<div id="accountModalOverlay" class="modal-overlay">
+    <div class="post-modal account-modal">
+        <h2>회원 정보 수정</h2>
+
+        <form id="nameUpdateForm" class="stack-form">
+            <label for="newName">닉네임</label>
+            <input id="newName" type="text" maxlength="30" placeholder="새 닉네임">
+            <button type="submit" class="primary-btn">닉네임 변경</button>
+        </form>
+
+        <form id="passwordUpdateForm" class="stack-form">
+            <label for="currentPassword">현재 비밀번호</label>
+            <input id="currentPassword" type="password" placeholder="현재 비밀번호">
+
+            <label for="newPassword">새 비밀번호</label>
+            <input id="newPassword" type="password" maxlength="15" placeholder="새 비밀번호">
+
+            <button type="submit" class="primary-btn">비밀번호 변경</button>
+        </form>
+
+        <p id="accountMessage" class="message"></p>
+
+        <button type="button" id="closeAccountModalButton" class="secondary-btn">
+            닫기
+        </button>
     </div>
 </div>
 </body>

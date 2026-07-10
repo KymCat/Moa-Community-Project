@@ -8,7 +8,8 @@
 
     <script defer src="/js/theme.js"></script>
     <script defer src="/js/api.js"></script>
-    <script defer src="/js/signup.js"></script>
+    <script defer src="/js/ui.js"></script>
+    <script defer src="/js/auth.js"></script>
 </head>
 <body>
 <button id="themeToggle" class="theme-btn">🌙</button>
@@ -25,7 +26,7 @@
             <button type="submit" class="primary-btn">회원가입</button>
         </form>
 
-        <button type="button" class="secondary-btn" onclick="location.href='/login.html'">
+        <button type="button" id="goLoginButton" class="secondary-btn">
             로그인으로 돌아가기
         </button>
 

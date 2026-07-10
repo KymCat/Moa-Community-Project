@@ -1,108 +1,129 @@
-const API_BASE_URL = "";
+const Api = (() => {
+    const API_BASE_URL = "";
+    const ACCESS_TOKEN_KEY = "accessToken";
 
-function getAccessToken() {
-    return localStorage.getItem("accessToken");
-}
-
-function saveAccessToken(accessToken) {
-    localStorage.setItem("accessToken", accessToken);
-}
-
-function removeAccessToken() {
-    localStorage.removeItem("accessToken");
-}
-
-function isPublicUrl(url) {
-    return url === "/auth/login"
-        || url === "/auth/reissue"
-        || url === "/users";
-}
-
-async function requestApi(url, options = {}) {
-    return sendRequest(url, options, true);
-}
-
-async function sendRequest(url, options = {}, retry) {
-    const accessToken = getAccessToken();
-
-    const headers = {
-        "Content-Type": "application/json",
-        ...options.headers,
-    };
-
-    if (accessToken && !isPublicUrl(url)) {
-        headers.Authorization = `Bearer ${accessToken}`;
+    function getAccessToken() {
+        return localStorage.getItem(ACCESS_TOKEN_KEY);
     }
 
-    const response = await fetch(API_BASE_URL + url, {
-        ...options,
-        headers,
-        credentials: "include",
-    });
+    function saveAccessToken(accessToken) {
+        localStorage.setItem(ACCESS_TOKEN_KEY, accessToken);
+    }
 
-    console.log("요청 URL:", url);
-    console.log("응답 status:", response.status);
+    function removeAccessToken() {
+        localStorage.removeItem(ACCESS_TOKEN_KEY);
+    }
 
-    if (response.status === 401 && retry && !isPublicUrl(url)) {
-        console.log("401 발생 → 재발행 시도");
+    function isPublicUrl(url) {
+        const path = url.split("?")[0];
+        return path === "/auth/login"
+            || path === "/auth/reissue"
+            || path === "/users";
+    }
 
-        const reissueSuccess = await reissueAccessToken();
+    async function request(url, options = {}, retry = true) {
+        const headers = new Headers(options.headers || {});
 
-        if (reissueSuccess) {
-            return sendRequest(url, options, false);
+        if (options.body && !headers.has("Content-Type")) {
+            headers.set("Content-Type", "application/json");
         }
 
-        removeAccessToken();
-
-        if (location.pathname !== "/login.html") {
-            location.href = "/login.html";
+        const accessToken = getAccessToken();
+        if (accessToken && !isPublicUrl(url)) {
+            headers.set("Authorization", `Bearer ${accessToken}`);
         }
 
-        return;
-    }
-
-    if (!response.ok) {
-        const errorBody = await response.json();
-        throw errorBody;
-    }
-
-    return parseResponse(response);
-}
-
-async function parseResponse(response) {
-    const contentType = response.headers.get("content-type");
-
-    if (contentType && contentType.includes("application/json")) {
-        return response.json();
-    }
-
-    return response.text();
-}
-
-async function reissueAccessToken() {
-    try {
-        const response = await fetch("/auth/reissue", {
-            method: "POST",
+        const response = await fetch(API_BASE_URL + url, {
+            ...options,
+            headers,
             credentials: "include",
         });
 
-        console.log("재발행 응답 status:", response.status);
+        if (response.status === 401 && retry && !isPublicUrl(url)) {
+            const reissued = await reissueAccessToken();
+            if (reissued) {
+                return request(url, options, false);
+            }
+
+            removeAccessToken();
+            if (location.pathname !== "/login.html") {
+                const returnUrl = encodeURIComponent(location.pathname + location.search);
+                location.href = `/login.html?reason=login-required&returnUrl=${returnUrl}`;
+            }
+            throw new Error("로그인이 필요합니다.");
+        }
 
         if (!response.ok) {
-            return false;
+            throw await parseError(response);
         }
 
-        const newAccessToken = await parseResponse(response);
-
-        if (!newAccessToken || newAccessToken.trim() === "") {
-            return false;
-        }
-
-        saveAccessToken(newAccessToken);
-
-        return true;
-    } catch (error) {
-        console.error("토큰 재발행 실패:", error);
-        return false;
+        return parseResponse(response);
     }
-}
+
+    async function parseResponse(response) {
+        if (response.status === 204) {
+            return null;
+        }
+
+        const contentType = response.headers.get("content-type") || "";
+        if (contentType.includes("application/json")) {
+            return response.json();
+        }
+
+        return response.text();
+    }
+
+    async function parseError(response) {
+        const contentType = response.headers.get("content-type") || "";
+        if (contentType.includes("application/json")) {
+            const body = await response.json();
+            return {
+                status: response.status,
+                code: body.code,
+                message: body.message || "요청 처리에 실패했습니다.",
+                path: body.path,
+            };
+        }
+
+        return {
+            status: response.status,
+            message: await response.text() || "요청 처리에 실패했습니다.",
+        };
+    }
+
+    async function reissueAccessToken() {
+        try {
+            const response = await fetch(API_BASE_URL + "/auth/reissue", {
+                method: "POST",
+                credentials: "include",
+            });
+
+            if (!response.ok) {
+                return false;
+            }
+
+            const accessToken = await parseResponse(response);
+            if (!accessToken || accessToken.trim() === "") {
+                return false;
+            }
+
+            saveAccessToken(accessToken);
+            return true;
+        } catch {
+            return false;
+        }
+    }
+
+    function getErrorMessage(error, fallback = "요청 처리에 실패했습니다.") {
+        return error?.message || fallback;
+    }
+
+    return {
+        request,
+        getAccessToken,
+        saveAccessToken,
+        removeAccessToken,
+        reissueAccessToken,
+        getErrorMessage,
+    };
+})();
