@@ -1,6 +1,7 @@
 package com.example.blogStudy.service;
 
 import com.example.blogStudy.dto.create.PostCreate;
+import com.example.blogStudy.dto.request.PostSearchType;
 import com.example.blogStudy.dto.response.PostDetailResponse;
 import com.example.blogStudy.dto.response.PostResponse;
 import com.example.blogStudy.dto.update.PostUpdate;
@@ -11,6 +12,12 @@ import com.example.blogStudy.exception.ErrorCode;
 import com.example.blogStudy.repository.LikeRepository;
 import com.example.blogStudy.repository.PostRepository;
 import com.example.blogStudy.repository.UserRepository;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -101,4 +108,21 @@ public class PostService {
         }
     }
 
+    // 게시글 검색
+    public PagedModel<PostResponse> searchPosts(
+            PostSearchType type,
+            String keyword,
+            int page
+    ) {
+
+        Pageable pageable = PageRequest.of(
+                page,
+                10,
+                Sort.by(Sort.Direction.DESC, "createdAt"));
+
+        Page<Post> posts = postRepository.searchPosts(type, keyword, pageable);
+        Page<PostResponse> result = posts.map(PostResponse::from);
+
+        return new PagedModel<>(result);
+    }
 }
