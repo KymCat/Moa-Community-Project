@@ -109,6 +109,7 @@ public class PostService {
     }
 
     // 게시글 검색
+    @Transactional(readOnly = true)
     public PagedModel<PostResponse> searchPosts(
             PostSearchType type,
             String keyword,
