@@ -64,7 +64,6 @@ dependencies {
 
 	// devtools
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 }
 
 tasks.named('test') {

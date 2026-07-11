@@ -7,14 +7,14 @@ import com.example.blogStudy.entity.QUser;
 import com.example.blogStudy.repository.PostSearchRepository;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class PostSearchRepositoryImpl implements PostSearchRepository {
     private final JPAQueryFactory queryFactory;
 
@@ -33,7 +33,7 @@ public class PostSearchRepositoryImpl implements PostSearchRepository {
         // queryFactory를 이용한 조회 및 Pagination 처리
         List<Post> content = queryFactory
                 .selectFrom(post)
-                .join(user, post.user).fetchJoin()
+                .join(post.user, user).fetchJoin()
                 .where(condition)
                 .orderBy(post.createdAt.desc())
                 .offset(pageable.getOffset())
@@ -43,7 +43,7 @@ public class PostSearchRepositoryImpl implements PostSearchRepository {
         Long total = queryFactory
                 .select(post.count())
                 .from(post)
-                .join(user, post.user)
+                .join(post.user, user)
                 .where(condition)
                 .fetchOne();
 
