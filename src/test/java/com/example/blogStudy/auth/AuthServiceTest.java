@@ -48,7 +48,7 @@ class AuthServiceTest {
         // Optional.of() : null 이 아닌 값을 매핑
         given(userRepository.findById(id)).willReturn(Optional.of(user));
         given(passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())).willReturn(true);
-        given(jwtProvider.createAccessToken(id,name)).willReturn("accessToken");
+        given(jwtProvider.createAccessToken(id)).willReturn("accessToken");
         given(jwtProvider.createRefreshToken(id)).willReturn("refreshToken");
         given(jwtProperties.getRefreshTokenExpiration()).willReturn(600000L);
 
@@ -98,7 +98,7 @@ class AuthServiceTest {
         given(jwtProvider.getUserId(refreshToken)).willReturn(userId);
         given(jwtProvider.getNickname(refreshToken)).willReturn(nickname);
         given(refreshTokenService.isValid(userId, refreshToken)).willReturn(true);
-        given(jwtProvider.createAccessToken(userId, nickname)).willReturn(newAccessToken);
+        given(jwtProvider.createAccessToken(userId)).willReturn(newAccessToken);
         given(jwtProvider.createRefreshToken(userId)).willReturn(newRefreshToken);
         given(jwtProperties.getRefreshTokenExpiration()).willReturn(refreshTokenExpiration);
 

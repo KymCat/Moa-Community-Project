@@ -1,14 +1,16 @@
 package com.example.blogStudy.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestCookieException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.List;
 
@@ -38,10 +40,6 @@ public class GlobalExceptionHandler {
             HttpServletRequest request)
     {
         log.warn("DTO 검증 예외 path = {}", request.getRequestURI());
-//        String message = e.getBindingResult()
-//                .getFieldErrors()
-//                .get(0)
-//                .getDefaultMessage();
 
         List<FieldError> errors = e.getBindingResult().getFieldErrors();
         StringBuilder messages = new StringBuilder();
@@ -62,8 +60,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MissingRequestCookieException.class)
     public ResponseEntity<ErrorResponse> handleMissingRequestCookieException(
             MissingRequestCookieException e,
-            HttpServletRequest request
-    )
+            HttpServletRequest request)
     {
         log.warn("요청 헤더 Cookie 예외 path = {}", request.getRequestURI());
 
@@ -76,6 +73,46 @@ public class GlobalExceptionHandler {
                         request.getRequestURI()));
     }
 
+    // Controller 개별 파라미터 검증 예외 (@Validated)
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorResponse> handleConstraintViolationException(
+            ConstraintViolationException e,
+            HttpServletRequest request)
+    {
+        for (ConstraintViolation<?> violation : e.getConstraintViolations()) {
+            String parameterPath = violation.getPropertyPath().toString();
+            Object invalidValue = violation.getInvalidValue();
+            String validationMsg = violation.getMessage();
+
+            String logs = String.format("'%s' 값 '%s' 은 유효하지 않습니다. %s",
+                    parameterPath, invalidValue, validationMsg);
+            log.error(logs);
+        }
+
+        return ResponseEntity
+                .status(400)
+                .body(ErrorResponse.of(
+                        400,
+                        ErrorCode.INVALID_REQUEST_VALUE.getCode(),
+                        ErrorCode.INVALID_REQUEST_VALUE.getMessage(),
+                        request.getRequestURI()));
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(
+            MethodArgumentTypeMismatchException e,
+            HttpServletRequest request)
+    {
+        log.error("Controller 요청값 파라미터 변환 타입 미스매치 예외 path = {}", request.getRequestURI());
+
+        return ResponseEntity
+                .status(400)
+                .body(ErrorResponse.of(
+                        400,
+                        ErrorCode.INVALID_REQUEST_TYPE_MISMATCH.getCode(),
+                        ErrorCode.INVALID_REQUEST_TYPE_MISMATCH.getMessage(),
+                        request.getRequestURI()));
+    }
 
 //    @ExceptionHandler(Exception.class)
 //    public ResponseEntity<ErrorResponse> handleException(
