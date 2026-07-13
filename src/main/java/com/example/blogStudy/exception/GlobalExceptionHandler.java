@@ -85,12 +85,11 @@ public class GlobalExceptionHandler {
     {
         for (ConstraintViolation<?> violation : e.getConstraintViolations()) {
             String parameterPath = violation.getPropertyPath().toString();
-            Object invalidValue = violation.getInvalidValue();
             String validationMsg = violation.getMessage();
 
-            String logs = String.format("'%s' 값 '%s' 은 유효하지 않습니다. %s",
-                    parameterPath, invalidValue, validationMsg);
-            log.error(logs);
+            String logs = String.format("'%s' 값이 유효하지 않습니다. %s",
+                    parameterPath, validationMsg);
+            log.warn(logs);
         }
 
         return ResponseEntity
@@ -109,13 +108,9 @@ public class GlobalExceptionHandler {
     {
         MethodParameter parameter = e.getParameter();
         String paramName = parameter.getParameterName();
-        String methodName = Optional.ofNullable(parameter.getMethod())
-                .map(Method::getName)
-                .orElse("unknown");
 
-        String logs = String.format("'%s' 메서드의 '%s' 파라미터 요청값과 타입이 불일치합니다.",
-                methodName, paramName);
-        log.error(logs);
+        String logs = String.format("'%s' 파라미터 요청값과 타입이 불일치합니다.", paramName);
+        log.warn(logs);
 
         return ResponseEntity
                 .status(400)
@@ -132,14 +127,8 @@ public class GlobalExceptionHandler {
             HttpServletRequest request)
     {
         String paramName = e.getParameterName();
-        String methodName = Optional.ofNullable(e.getMethodParameter())
-                .map(MethodParameter::getMethod)
-                .map(Method::getName)
-                .orElse("unKnown");
-
-        String logs = String.format("'%s' 메서드의 '%s' 매개변수가 누락되었습니다.",
-                methodName, paramName);
-        log.error(logs);
+        String logs = String.format("'%s' 매개변수가 누락되었습니다.",paramName);
+        log.warn(logs);
 
         return ResponseEntity
                 .status(400)
