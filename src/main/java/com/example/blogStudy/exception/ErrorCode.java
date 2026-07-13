@@ -14,7 +14,6 @@ public enum ErrorCode {
     INVALID_INPUT_VALUE     (HttpStatus.BAD_REQUEST, "USER-004", "잘못된 입력입니다."),
     SAME_AS_CURRENT_VALUE   (HttpStatus.BAD_REQUEST, "USER-005", "새로운 값이 기존과 동일한 값 입니다."),
 
-
     // Post Exception
     POST_NOT_FOUND      (HttpStatus.NOT_FOUND, "POST-001", "해당 게시글을 찾을 수 없습니다."),
     DUPLICATE_POST_ID   (HttpStatus.BAD_REQUEST, "POST-002", "이미 존재하는 게시글 ID 입니다."),
@@ -36,7 +35,12 @@ public enum ErrorCode {
     // Auth Exception
     INVALID_AUTH_HEADER (HttpStatus.UNAUTHORIZED, "AUTH-001", "유효하지 않은 헤더 입니다."),
     INVALID_TOKEN_OWNER (HttpStatus.FORBIDDEN, "AUTH-002", "해당 토큰의 소유자가 아닙니다."),
-    REFRESH_NOT_FOUND(HttpStatus.BAD_REQUEST, "AUTH-003", "Refresh 토큰이 존재하지 않습니다"),
+    REFRESH_NOT_FOUND   (HttpStatus.BAD_REQUEST, "AUTH-003", "Refresh 토큰이 존재하지 않습니다"),
+
+    // Validation Exception
+    INVALID_REQUEST_VALUE           (HttpStatus.BAD_REQUEST, "VALID-001", "잘못된 요청 파라미터입니다."),
+    INVALID_REQUEST_TYPE_MISMATCH   (HttpStatus.BAD_REQUEST, "VALID-002", "잘못된 요청 파라미터 타입입니다."),
+    INVALID_REQUEST_PARAM_MISSING   (HttpStatus.BAD_REQUEST, "VALID-003", "누락된 요청 파라미터가 있습니다."),
 
     // System Exception
     INTERNAL_SERVER_ERROR

@@ -1,12 +1,16 @@
 package com.example.blogStudy.controller;
 
 import com.example.blogStudy.dto.create.PostCreate;
+import com.example.blogStudy.dto.request.PostSearchType;
 import com.example.blogStudy.dto.response.PostDetailResponse;
 import com.example.blogStudy.dto.response.PostResponse;
 import com.example.blogStudy.dto.update.PostUpdate;
 import com.example.blogStudy.security.CustomUserDetails;
 import com.example.blogStudy.service.PostService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -16,9 +20,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 
+@Validated
 @RestController
 @RequiredArgsConstructor
 public class PostController {
@@ -72,6 +78,17 @@ public class PostController {
         postService.deletePost(userId, id);
 
         return ResponseEntity.noContent().build();
+    }
+
+    // 게시글 검색
+    @GetMapping("/posts/search")
+    public PagedModel<PostResponse> searchPosts(
+            @RequestParam PostSearchType type,
+            @RequestParam @NotBlank @Size(max = 100) String keyword,
+            @RequestParam(defaultValue = "0") @Min(0) int page
+    ) {
+
+        return postService.searchPosts(type, keyword, page);
     }
 
 }

@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 import java.util.Optional;
 
-public interface PostRepository extends JpaRepository<Post, Long> {
+public interface PostRepository extends JpaRepository<Post, Long>, PostSearchRepository {
 
     // 게시글 전체 조회 N+1 fetch join 해결 방법
     @Query(
@@ -22,5 +22,4 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     // 게시글 단건 조회 fetch join
     @EntityGraph(attributePaths = "user")
     Optional<Post> findById(Long id);
-
 }

@@ -1,15 +1,18 @@
 package com.example.blogStudy.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
+import org.springframework.core.MethodParameter;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestCookieException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import java.util.List;
 
 @Slf4j
@@ -38,10 +41,6 @@ public class GlobalExceptionHandler {
             HttpServletRequest request)
     {
         log.warn("DTO 검증 예외 path = {}", request.getRequestURI());
-//        String message = e.getBindingResult()
-//                .getFieldErrors()
-//                .get(0)
-//                .getDefaultMessage();
 
         List<FieldError> errors = e.getBindingResult().getFieldErrors();
         StringBuilder messages = new StringBuilder();
@@ -62,8 +61,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MissingRequestCookieException.class)
     public ResponseEntity<ErrorResponse> handleMissingRequestCookieException(
             MissingRequestCookieException e,
-            HttpServletRequest request
-    )
+            HttpServletRequest request)
     {
         log.warn("요청 헤더 Cookie 예외 path = {}", request.getRequestURI());
 
@@ -73,6 +71,68 @@ public class GlobalExceptionHandler {
                         400,
                         ErrorCode.REFRESH_NOT_FOUND.getCode(),
                         ErrorCode.REFRESH_NOT_FOUND.getMessage(),
+                        request.getRequestURI()));
+    }
+
+    // Controller 개별 파라미터 검증 예외 (@Validated)
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorResponse> handleConstraintViolationException(
+            ConstraintViolationException e,
+            HttpServletRequest request)
+    {
+        for (ConstraintViolation<?> violation : e.getConstraintViolations()) {
+            String parameterPath = violation.getPropertyPath().toString();
+            String validationMsg = violation.getMessage();
+
+            String logs = String.format("'%s' 값이 유효하지 않습니다. %s",
+                    parameterPath, validationMsg);
+            log.warn(logs);
+        }
+
+        return ResponseEntity
+                .status(400)
+                .body(ErrorResponse.of(
+                        400,
+                        ErrorCode.INVALID_REQUEST_VALUE.getCode(),
+                        ErrorCode.INVALID_REQUEST_VALUE.getMessage(),
+                        request.getRequestURI()));
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(
+            MethodArgumentTypeMismatchException e,
+            HttpServletRequest request)
+    {
+        MethodParameter parameter = e.getParameter();
+        String paramName = parameter.getParameterName();
+
+        String logs = String.format("'%s' 파라미터 요청값과 타입이 불일치합니다.", paramName);
+        log.warn(logs);
+
+        return ResponseEntity
+                .status(400)
+                .body(ErrorResponse.of(
+                        400,
+                        ErrorCode.INVALID_REQUEST_TYPE_MISMATCH.getCode(),
+                        ErrorCode.INVALID_REQUEST_TYPE_MISMATCH.getMessage(),
+                        request.getRequestURI()));
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<ErrorResponse> handleMissingServletRequestParameterException(
+            MissingServletRequestParameterException e,
+            HttpServletRequest request)
+    {
+        String paramName = e.getParameterName();
+        String logs = String.format("'%s' 매개변수가 누락되었습니다.",paramName);
+        log.warn(logs);
+
+        return ResponseEntity
+                .status(400)
+                .body(ErrorResponse.of(
+                        400,
+                        ErrorCode.INVALID_REQUEST_PARAM_MISSING.getCode(),
+                        ErrorCode.INVALID_REQUEST_PARAM_MISSING.getMessage(),
                         request.getRequestURI()));
     }
 
