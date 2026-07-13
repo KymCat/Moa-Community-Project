@@ -61,6 +61,28 @@
                 </button>
             </div>
 
+            <form id="postSearchForm" class="post-search-form">
+                <label class="sr-only" for="postSearchType">검색 대상</label>
+                <select id="postSearchType" class="post-search-select">
+                    <option value="TITLE">제목</option>
+                    <option value="CONTENT">본문</option>
+                    <option value="AUTHOR">작성자</option>
+                </select>
+
+                <label class="sr-only" for="postSearchKeyword">검색어</label>
+                <input
+                        id="postSearchKeyword"
+                        class="post-search-input"
+                        type="search"
+                        maxlength="100"
+                        placeholder="검색어를 입력하세요"
+                >
+
+                <button type="submit" class="search-submit-btn">검색</button>
+                <button type="button" id="clearPostSearchButton" class="search-reset-btn">초기화</button>
+            </form>
+
+            <p id="postSearchMessage" class="message search-message"></p>
             <div id="postList" class="post-list"></div>
 
             <div id="pagination" class="pagination"></div>

@@ -4,6 +4,7 @@ const Posts = (() => {
         currentPost: null,
         editMode: false,
         afterSave: null,
+        search: null,
     };
 
     const elements = {};
@@ -11,6 +12,11 @@ const Posts = (() => {
     function init() {
         elements.postList = UI.$("#postList");
         elements.pagination = UI.$("#pagination");
+        elements.searchForm = UI.$("#postSearchForm");
+        elements.searchType = UI.$("#postSearchType");
+        elements.searchKeyword = UI.$("#postSearchKeyword");
+        elements.searchMessage = UI.$("#postSearchMessage");
+        elements.clearSearchButton = UI.$("#clearPostSearchButton");
 
         elements.postOverlay = UI.$("#postModalOverlay");
         elements.postForm = UI.$("#postCreateForm");
@@ -49,6 +55,8 @@ const Posts = (() => {
         });
 
         elements.postForm?.addEventListener("submit", handleSubmit);
+        elements.searchForm?.addEventListener("submit", handleSearch);
+        elements.clearSearchButton?.addEventListener("click", clearSearch);
         elements.likeButton?.addEventListener("click", handleLike);
         elements.editButton?.addEventListener("click", () => openEditModal(state.currentPost));
         elements.deleteButton?.addEventListener("click", deleteCurrentPost);
@@ -59,7 +67,7 @@ const Posts = (() => {
         elements.postList.classList.add("loading");
 
         try {
-            const data = await Api.request(`/posts?page=${page}&size=5`);
+            const data = await Api.request(getPostRequestUrl(page));
             const posts = await attachLikeCounts(data.content || []);
             renderList(posts, data.page);
         } catch (error) {
@@ -102,13 +110,53 @@ const Posts = (() => {
         if (posts.length === 0) {
             elements.postList.appendChild(UI.el("p", {
                 className: "description",
-                text: "게시글이 없습니다.",
+                text: state.search ? "검색 결과가 없습니다." : "게시글이 없습니다.",
             }));
         } else {
             posts.forEach(post => elements.postList.appendChild(createPostCard(post)));
         }
 
         UI.renderPagination(elements.pagination, pageInfo, load);
+    }
+
+    function getPostRequestUrl(page) {
+        if (!state.search) {
+            return `/posts?page=${page}&size=5`;
+        }
+
+        const params = new URLSearchParams({
+            type: state.search.type,
+            keyword: state.search.keyword,
+            page: String(page),
+        });
+
+        return `/posts/search?${params.toString()}`;
+    }
+
+    async function handleSearch(event) {
+        event.preventDefault();
+
+        const keyword = elements.searchKeyword.value.trim();
+        if (!keyword) {
+            UI.setMessage(elements.searchMessage, "검색어를 입력해주세요.");
+            elements.searchKeyword.focus();
+            return;
+        }
+
+        state.search = {
+            type: elements.searchType.value,
+            keyword,
+        };
+
+        UI.setMessage(elements.searchMessage);
+        await load(0);
+    }
+
+    async function clearSearch() {
+        state.search = null;
+        elements.searchForm.reset();
+        UI.setMessage(elements.searchMessage);
+        await load(0);
     }
 
     function createPostCard(post) {
