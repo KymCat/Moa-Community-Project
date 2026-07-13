@@ -4,15 +4,19 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.MethodParameter;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestCookieException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @RestControllerAdvice   // 프로젝트 전체 Controller 에서 발생하는 예외 처리 클래스
@@ -103,7 +107,15 @@ public class GlobalExceptionHandler {
             MethodArgumentTypeMismatchException e,
             HttpServletRequest request)
     {
-        log.error("Controller 요청값 파라미터 변환 타입 미스매치 예외 path = {}", request.getRequestURI());
+        MethodParameter parameter = e.getParameter();
+        String paramName = parameter.getParameterName();
+        String methodName = Optional.ofNullable(parameter.getMethod())
+                .map(Method::getName)
+                .orElse("unknown");
+
+        String logs = String.format("'%s' 메서드의 '%s' 파라미터 요청값과 타입이 불일치합니다.",
+                methodName, paramName);
+        log.error(logs);
 
         return ResponseEntity
                 .status(400)
@@ -113,6 +125,31 @@ public class GlobalExceptionHandler {
                         ErrorCode.INVALID_REQUEST_TYPE_MISMATCH.getMessage(),
                         request.getRequestURI()));
     }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<ErrorResponse> handlerMissingServletRequestParameterException(
+            MissingServletRequestParameterException e,
+            HttpServletRequest request)
+    {
+        String paramName = e.getParameterName();
+        String methodName = Optional.ofNullable(e.getMethodParameter())
+                .map(MethodParameter::getMethod)
+                .map(Method::getName)
+                .orElse("unKnown");
+
+        String logs = String.format("'%s' 메서드의 '%s' 매개변수가 누락되었습니다.",
+                methodName, paramName);
+        log.error(logs);
+
+        return ResponseEntity
+                .status(400)
+                .body(ErrorResponse.of(
+                        400,
+                        ErrorCode.INVALID_REQUEST_PARAM_MISSING.getCode(),
+                        ErrorCode.INVALID_REQUEST_PARAM_MISSING.getMessage(),
+                        request.getRequestURI()));
+    }
+
 
 //    @ExceptionHandler(Exception.class)
 //    public ResponseEntity<ErrorResponse> handleException(
