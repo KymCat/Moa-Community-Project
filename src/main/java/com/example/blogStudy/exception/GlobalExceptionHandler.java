@@ -13,10 +13,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-
-import java.lang.reflect.Method;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @RestControllerAdvice   // 프로젝트 전체 Controller 에서 발생하는 예외 처리 클래스
@@ -122,7 +119,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
-    public ResponseEntity<ErrorResponse> handlerMissingServletRequestParameterException(
+    public ResponseEntity<ErrorResponse> handleMissingServletRequestParameterException(
             MissingServletRequestParameterException e,
             HttpServletRequest request)
     {
