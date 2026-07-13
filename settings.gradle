@@ -1,5 +1,1 @@
-pluginManagement {
-    plugins {
-    }
-}
 rootProject.name = 'blogStudy'
