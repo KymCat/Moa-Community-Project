@@ -13,6 +13,7 @@ import com.example.blogStudy.repository.PostRepository;
 import com.example.blogStudy.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -79,5 +80,19 @@ public class CommentService {
 
         comment.validateOwner(userId);
         commentRepository.delete(comment);
+    }
+
+    // 마이페이지 본인 댓글 조회
+    public PagedModel<CommentResponse> getMyComments(String userId, int page) {
+        Pageable pageable = PageRequest.of(
+                page,
+                10,
+                Sort.by(Sort.Direction.DESC, "createdAt")
+        );
+
+        Page<Comment> comments = commentRepository.findByUserId(userId, pageable);
+        Page<CommentResponse> result = comments.map(CommentResponse::from);
+
+        return new PagedModel<>(result);
     }
 }

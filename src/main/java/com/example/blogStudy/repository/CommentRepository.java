@@ -18,7 +18,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
         Page<Comment> findAllWithUser(Pageable pageable);
 
         @Query(
-                value = "SELECT c FROM Comment c JOIN FETCH c.user where c.post.id = :postId",
+                value = "SELECT c FROM Comment c JOIN FETCH c.user WHERE c.post.id = :postId",
                 countQuery = """
                         SELECT COUNT(c) 
                         FROM Comment c
@@ -26,4 +26,14 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
                         """
         )
         Page<Comment> findByPostId(@Param("postId") Long postId, Pageable pageable);
+
+        @Query(
+                value = "SELECT c FROM Comment c JOIN FETCH c.post WHERE c.user.id = :userId",
+                countQuery = """
+                        SELECT COUNT(c)
+                        FROM Comment c
+                        WHERE c.user.id = :userId
+                        """
+        )
+        Page<Comment> findByUserId(@Param("userId") String userId, Pageable pageable);
 }
