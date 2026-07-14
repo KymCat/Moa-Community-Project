@@ -247,6 +247,9 @@ const Auth = (() => {
         loadCurrentUser,
         getCurrentUser,
         logout,
+        updateName,
+        updatePassword,
+        deleteAccount,
         initAccountSettings,
     };
 })();
