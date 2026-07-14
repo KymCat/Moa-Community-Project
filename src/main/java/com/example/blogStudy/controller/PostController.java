@@ -18,7 +18,6 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -89,6 +88,15 @@ public class PostController {
     ) {
 
         return postService.searchPosts(type, keyword, page);
+    }
+
+    // 마이페이지 본인 게시글 조회
+    @GetMapping("/posts/me")
+    public PagedModel<PostResponse> getMyPosts(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                               @RequestParam(defaultValue = "0") @Min(0) int page)
+    {
+        String userId = userDetails.getUsername();
+        return postService.getMyPosts(userId, page);
     }
 
 }
