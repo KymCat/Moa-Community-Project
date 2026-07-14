@@ -11,7 +11,7 @@ import com.example.blogStudy.exception.ErrorCode;
 import com.example.blogStudy.repository.CommentRepository;
 import com.example.blogStudy.repository.PostRepository;
 import com.example.blogStudy.repository.UserRepository;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -31,6 +31,7 @@ public class CommentService {
 
 
     // id 해당 게시글 댓글 조회
+    @Transactional(readOnly = true)
     public PagedModel<CommentResponse> getComments(Long id, int page) {
         Pageable pageable = PageRequest.of(
                 page,
@@ -83,11 +84,15 @@ public class CommentService {
     }
 
     // 마이페이지 본인 댓글 조회
+    @Transactional(readOnly = true)
     public PagedModel<CommentResponse> getMyComments(String userId, int page) {
         Pageable pageable = PageRequest.of(
                 page,
                 10,
-                Sort.by(Sort.Direction.DESC, "createdAt")
+                Sort.by(
+                        Sort.Order.desc("createAt"),
+                        Sort.Order.desc("id")
+                )
         );
 
         Page<Comment> comments = commentRepository.findByUserId(userId, pageable);
