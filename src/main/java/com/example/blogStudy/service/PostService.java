@@ -117,7 +117,7 @@ public class PostService {
                 page,
                 10,
                 Sort.by(
-                        Sort.Order.desc("createAt"),
+                        Sort.Order.desc("createdAt"),
                         Sort.Order.desc("id")
                 )
         );
@@ -135,7 +135,7 @@ public class PostService {
                 page,
                 10,
                 Sort.by(
-                        Sort.Order.desc("createAt"),
+                        Sort.Order.desc("createdAt"),
                         Sort.Order.desc("id")
                 )
         );
