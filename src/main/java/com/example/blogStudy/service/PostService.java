@@ -116,9 +116,31 @@ public class PostService {
         Pageable pageable = PageRequest.of(
                 page,
                 10,
-                Sort.by(Sort.Direction.DESC, "createdAt"));
+                Sort.by(
+                        Sort.Order.desc("createdAt"),
+                        Sort.Order.desc("id")
+                )
+        );
 
         Page<Post> posts = postRepository.searchPosts(type, keyword, pageable);
+        Page<PostResponse> result = posts.map(PostResponse::from);
+
+        return new PagedModel<>(result);
+    }
+
+    // 마이페이지 본인 게시글 조회
+    @Transactional(readOnly = true)
+    public PagedModel<PostResponse> getMyPosts(String userId, int page) {
+        Pageable pageable = PageRequest.of(
+                page,
+                10,
+                Sort.by(
+                        Sort.Order.desc("createdAt"),
+                        Sort.Order.desc("id")
+                )
+        );
+
+        Page<Post> posts = postRepository.findByUserId(userId, pageable);
         Page<PostResponse> result = posts.map(PostResponse::from);
 
         return new PagedModel<>(result);

@@ -6,15 +6,16 @@ import com.example.blogStudy.dto.update.CommentUpdate;
 import com.example.blogStudy.security.CustomUserDetails;
 import com.example.blogStudy.service.CommentService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.web.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-
+@Validated
 @RestController
 @RequiredArgsConstructor
 public class CommentController {
@@ -67,5 +68,14 @@ public class CommentController {
         commentService.deleteComment(userId, id);
 
         return ResponseEntity.noContent().build();
+    }
+
+    // 마이페이지 본인 댓글 조회
+    @GetMapping("/comments/me")
+    public PagedModel<CommentResponse> getMyComments(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                               @RequestParam(defaultValue = "0") @Min(0) int page)
+    {
+        String userId = userDetails.getUsername();
+        return commentService.getMyComments(userId, page);
     }
 }
