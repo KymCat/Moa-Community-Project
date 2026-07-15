@@ -2,6 +2,7 @@ package com.example.blogStudy.controller;
 
 import com.example.blogStudy.dto.create.PostCreate;
 import com.example.blogStudy.dto.request.PostSearchType;
+import com.example.blogStudy.dto.response.ApiResponse;
 import com.example.blogStudy.dto.response.PostDetailResponse;
 import com.example.blogStudy.dto.response.PostResponse;
 import com.example.blogStudy.dto.update.PostUpdate;
@@ -32,22 +33,26 @@ public class PostController {
 
     // 게시글 전체 조회
     @GetMapping("/posts")
-    public PagedModel<PostResponse> getPosts(
+    public ApiResponse<PagedModel<PostResponse>> getPosts(
             @PageableDefault(size = 5, sort = "createdAt", direction = Sort.Direction.DESC)
             Pageable pageable)
     {
-        return postService.getPosts(pageable);
+        PagedModel<PostResponse> pages = postService.getPosts(pageable);
+
+        return ApiResponse.success(pages);
     }
 
     // 게시글 단일 조회
     @GetMapping("/posts/{id}")
-    public PostDetailResponse getPost(@PathVariable Long id) {
-        return postService.getPost(id);
+    public ApiResponse<PostDetailResponse> getPost(@PathVariable Long id) {
+        PostDetailResponse page = postService.getPost(id);
+
+        return ApiResponse.success(page);
     }
 
     // 게시글 작성
     @PostMapping("/posts")
-    public ResponseEntity<PostResponse> createPost(@AuthenticationPrincipal CustomUserDetails userDetails,
+    public ResponseEntity<ApiResponse<PostResponse>> createPost(@AuthenticationPrincipal CustomUserDetails userDetails,
                                                    @Valid @RequestBody PostCreate dto) {
 
         String userId = userDetails.getUserId();
@@ -55,18 +60,18 @@ public class PostController {
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(created);
+                .body(ApiResponse.success(created));
     }
 
     // 게시글 수정
     @PatchMapping("/posts/{id}")
-    public ResponseEntity<PostResponse> updatePost(@AuthenticationPrincipal CustomUserDetails userDetails,
+    public ResponseEntity<ApiResponse<PostResponse>> updatePost(@AuthenticationPrincipal CustomUserDetails userDetails,
                                                    @PathVariable Long id,
                                                    @Valid @RequestBody PostUpdate dto) {
         String userId = userDetails.getUserId();
         PostResponse updated = postService.updatePost(userId, id, dto);
 
-        return ResponseEntity.ok(updated);
+        return ResponseEntity.ok(ApiResponse.success(updated));
     }
 
     // 게시글 삭제
@@ -81,22 +86,26 @@ public class PostController {
 
     // 게시글 검색
     @GetMapping("/posts/search")
-    public PagedModel<PostResponse> searchPosts(
+    public ApiResponse<PagedModel<PostResponse>> searchPosts(
             @RequestParam PostSearchType type,
             @RequestParam @NotBlank @Size(max = 100) String keyword,
             @RequestParam(defaultValue = "0") @Min(0) int page
     ) {
 
-        return postService.searchPosts(type, keyword, page);
+        PagedModel<PostResponse> pages = postService.searchPosts(type, keyword, page);
+
+        return ApiResponse.success(pages);
     }
 
     // 마이페이지 본인 게시글 조회
     @GetMapping("/posts/me")
-    public PagedModel<PostResponse> getMyPosts(@AuthenticationPrincipal CustomUserDetails userDetails,
+    public ApiResponse<PagedModel<PostResponse>> getMyPosts(@AuthenticationPrincipal CustomUserDetails userDetails,
                                                @RequestParam(defaultValue = "0") @Min(0) int page)
     {
         String userId = userDetails.getUsername();
-        return postService.getMyPosts(userId, page);
+        PagedModel<PostResponse> pages = postService.getMyPosts(userId, page);
+
+        return ApiResponse.success(pages);
     }
 
 }

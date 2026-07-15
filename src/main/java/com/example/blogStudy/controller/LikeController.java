@@ -1,10 +1,11 @@
 package com.example.blogStudy.controller;
 
+import com.example.blogStudy.dto.response.ApiResponse;
 import com.example.blogStudy.security.CustomUserDetails;
 import com.example.blogStudy.service.LikeService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,21 +20,25 @@ public class LikeController {
 
     // 해당 게시글 좋아요 여부
     @GetMapping("/posts/{postId}/likes")
-    ResponseEntity<Boolean> likes(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                  @PathVariable Long postId) {
+    ApiResponse<Boolean> likes(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                              @PathVariable Long postId) {
 
         String userId = userDetails.getUserId();
-        return ResponseEntity.ok(likeService.likes(userId, postId));
+        boolean like = likeService.likes(userId, postId);
+
+        return ApiResponse.success(like);
     }
 
     // 게시글 좋아요 생성
     @PostMapping("/posts/{postId}/likes")
-    ResponseEntity<Void> likePost(@AuthenticationPrincipal CustomUserDetails userDetails,
+    ResponseEntity<ApiResponse<Void>> likePost(@AuthenticationPrincipal CustomUserDetails userDetails,
                                   @PathVariable Long postId) {
 
         String userId = userDetails.getUserId();
         likeService.likePost(userId, postId);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(ApiResponse.success(null));
     }
 }

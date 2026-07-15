@@ -1,6 +1,7 @@
 package com.example.blogStudy.controller;
 
 import com.example.blogStudy.dto.create.UserCreate;
+import com.example.blogStudy.dto.response.ApiResponse;
 import com.example.blogStudy.dto.response.UserResponse;
 import com.example.blogStudy.dto.update.NameUpdate;
 import com.example.blogStudy.dto.update.PasswordUpdate;
@@ -22,30 +23,36 @@ public class UserController {
 
     // 유저 전체 조회
     @GetMapping("/users")
-    public List<UserResponse> getUsers() {
-        return userService.getUsers();
+    public ApiResponse<List<UserResponse>> getUsers() {
+        List<UserResponse> users = userService.getUsers();
+
+        return ApiResponse.success(users);
     }
 
     // 해당 id 유저 조회
     @GetMapping("/users/{id}")
-    public UserResponse getUserById(@PathVariable String id) {
-        return userService.getUserById(id);
+    public ApiResponse<UserResponse> getUserById(@PathVariable String id) {
+        UserResponse user = userService.getUserById(id);
+
+        return ApiResponse.success(user);
     }
 
     // 로그인한 본인 정보 조회
     @GetMapping("/users/me")
-    public UserResponse getMe(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        return userService.getMe(userDetails.getUserId());
+    public ApiResponse<UserResponse> getMe(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        UserResponse me =  userService.getMe(userDetails.getUserId());
+
+        return ApiResponse.success(me);
     }
 
     // 유저 계정 생성
     @PostMapping("/users")
-    public ResponseEntity<UserResponse> createUser(@Valid @RequestBody UserCreate dto) {
+    public ResponseEntity<ApiResponse<UserResponse>> createUser(@Valid @RequestBody UserCreate dto) {
         UserResponse created = userService.createUser(dto);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(created);
+                .body(ApiResponse.success(created));
     }
 
     // 현재 유저 비밀번호 수정

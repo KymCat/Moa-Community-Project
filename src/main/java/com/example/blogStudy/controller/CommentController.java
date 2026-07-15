@@ -1,6 +1,7 @@
 package com.example.blogStudy.controller;
 
 import com.example.blogStudy.dto.create.CommentCreate;
+import com.example.blogStudy.dto.response.ApiResponse;
 import com.example.blogStudy.dto.response.CommentResponse;
 import com.example.blogStudy.dto.update.CommentUpdate;
 import com.example.blogStudy.security.CustomUserDetails;
@@ -23,18 +24,20 @@ public class CommentController {
     private final CommentService commentService;
 
     // id 해당 게시글 댓글 조회
-    @GetMapping("/posts/{id}/comments")
-    public PagedModel<CommentResponse> getComments(
-            @PathVariable Long id,
+    @GetMapping("/posts/{postId}/comments")
+    public ApiResponse<PagedModel<CommentResponse>> getComments(
+            @PathVariable Long postId,
             @RequestParam(defaultValue = "0") int page)
     {
-        return commentService.getComments(id,page);
+        PagedModel<CommentResponse> comments = commentService.getComments(postId, page);
+
+        return ApiResponse.success(comments);
     }
 
 
     // 댓글 작성
     @PostMapping("/posts/{postId}/comments")
-    public ResponseEntity<CommentResponse> createComment(@AuthenticationPrincipal CustomUserDetails userDetails,
+    public ResponseEntity<ApiResponse<CommentResponse>> createComment(@AuthenticationPrincipal CustomUserDetails userDetails,
                                                          @PathVariable Long postId,
                                                          @Valid @RequestBody CommentCreate dto) {
 
@@ -43,19 +46,19 @@ public class CommentController {
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(created);
+                .body(ApiResponse.success(created));
     }
 
 
     // 댓글 수정
     @PatchMapping("/comments/{id}")
-    public ResponseEntity<CommentResponse> updateComment(@AuthenticationPrincipal CustomUserDetails userDetails,
+    public ResponseEntity<ApiResponse<CommentResponse>> updateComment(@AuthenticationPrincipal CustomUserDetails userDetails,
                                                          @PathVariable Long id,
                                                          @Valid @RequestBody CommentUpdate dto) {
         String userId = userDetails.getUserId();
         CommentResponse updated = commentService.updateComment(userId, id, dto);
 
-        return ResponseEntity.ok(updated);
+        return ResponseEntity.ok(ApiResponse.success(updated));
     }
 
 
@@ -72,10 +75,12 @@ public class CommentController {
 
     // 마이페이지 본인 댓글 조회
     @GetMapping("/comments/me")
-    public PagedModel<CommentResponse> getMyComments(@AuthenticationPrincipal CustomUserDetails userDetails,
+    public ApiResponse<PagedModel<CommentResponse>> getMyComments(@AuthenticationPrincipal CustomUserDetails userDetails,
                                                @RequestParam(defaultValue = "0") @Min(0) int page)
     {
         String userId = userDetails.getUsername();
-        return commentService.getMyComments(userId, page);
+        PagedModel<CommentResponse> comments = commentService.getMyComments(userId, page);
+
+        return ApiResponse.success(comments);
     }
 }
