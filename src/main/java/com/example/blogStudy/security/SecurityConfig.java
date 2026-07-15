@@ -21,6 +21,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final ApiAuthenticationEntryPoint apiAuthenticationEntryPoint;
+    private final ApiAccessDeniedHandler apiAccessDeniedHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -52,7 +54,11 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 // JWT 필터를 Spring Security 필터 체인에 등록
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling(exceptionHandling -> exceptionHandling
+                        .authenticationEntryPoint(apiAuthenticationEntryPoint)
+                        .accessDeniedHandler(apiAccessDeniedHandler)
+                );
 
         return http.build();
     }
