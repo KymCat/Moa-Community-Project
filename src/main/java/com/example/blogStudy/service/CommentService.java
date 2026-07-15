@@ -32,15 +32,17 @@ public class CommentService {
 
     // id 해당 게시글 댓글 조회
     @Transactional(readOnly = true)
-    public PagedModel<CommentResponse> getComments(Long id, int page) {
+    public PagedModel<CommentResponse> getComments(Long postId, int page) {
         Pageable pageable = PageRequest.of(
                 page,
                 3,
-                Sort.by("createdAt").descending());
+                Sort.by(
+                        Sort.Order.desc("createdAt")
+                ));
 
         // Page => PagedModel : Page 타입보다 안정적인 구조인 PagedModel 반환 권장
         return new PagedModel<>(
-                commentRepository.findByPostId(id,pageable)
+                commentRepository.findByPostId(postId, pageable)
                         .map(CommentResponse::from));
 
     }
