@@ -138,9 +138,8 @@ public class GlobalExceptionHandler {
             Exception e,
             HttpServletRequest request
     ) {
-        log.error("처리되지 않은 예외, path={}, msg = {}",
-                request.getRequestURI(),
-                e.getMessage());
+        log.error("처리되지 않은 예외, path={}",
+                request.getRequestURI(), e);
 
         String code = ErrorCode.INTERNAL_SERVER_ERROR.getCode();
         String msg = ErrorCode.INTERNAL_SERVER_ERROR.getMessage();
