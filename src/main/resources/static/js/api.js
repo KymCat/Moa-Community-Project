@@ -67,7 +67,8 @@ const Api = (() => {
 
         const contentType = response.headers.get("content-type") || "";
         if (contentType.includes("application/json")) {
-            return response.json();
+            const body = await response.json();
+            return body.data;
         }
 
         return response.text();
@@ -81,7 +82,6 @@ const Api = (() => {
                 status: response.status,
                 code: body.code,
                 message: body.message || "요청 처리에 실패했습니다.",
-                path: body.path,
             };
         }
 
