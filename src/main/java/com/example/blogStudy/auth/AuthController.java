@@ -1,6 +1,7 @@
 package com.example.blogStudy.auth;
 
 import com.example.blogStudy.dto.request.LoginRequest;
+import com.example.blogStudy.dto.response.ApiResponse;
 import com.example.blogStudy.exception.CustomException;
 import com.example.blogStudy.exception.ErrorCode;
 import com.example.blogStudy.jwt.JwtTokenResult;
@@ -32,20 +33,21 @@ public class AuthController {
 
     // 로그인
     @PostMapping("/auth/login")
-    public ResponseEntity<String> login(@RequestBody @Valid LoginRequest dto) {
+    public ResponseEntity<ApiResponse<String>> login(@RequestBody @Valid LoginRequest dto) {
         JwtTokenResult result = authService.login(dto);
 
         // Refresh Token set Cookie
         ResponseCookie cookie = refreshTokenCookie(result);
+        String accessToken = result.getAccessToken();
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                .body(result.getAccessToken());
+                .body(ApiResponse.success(accessToken));
     }
 
     // 로그아웃
     @PostMapping("/auth/logout")
-    public ResponseEntity<Void> logout(
+    public ResponseEntity<ApiResponse<Void>> logout(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @CookieValue(name = "refreshToken") String refreshToken,
             HttpServletRequest request)
@@ -64,12 +66,12 @@ public class AuthController {
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                .build();
+                .body(ApiResponse.success(null));
     }
 
     // 토큰 재발행
     @PostMapping("/auth/reissue")
-    public ResponseEntity<String> reissue(
+    public ResponseEntity<ApiResponse<String>> reissue(
             @CookieValue(name = "refreshToken") String refreshToken)
     {
 
@@ -77,10 +79,11 @@ public class AuthController {
 
         // Refresh Token set Cookie
         ResponseCookie cookie = refreshTokenCookie(result);
+        String accessToken = result.getAccessToken();
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                .body(result.getAccessToken());
+                .body(ApiResponse.success(accessToken));
     }
 
     // Refresh Token Cookie 설정

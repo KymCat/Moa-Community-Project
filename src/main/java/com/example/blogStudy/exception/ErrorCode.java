@@ -33,9 +33,11 @@ public enum ErrorCode {
     INVALID_TOKEN_TYPE  (HttpStatus.UNAUTHORIZED, "JWT-004", "잘못된 종류의 토큰입니다."),
 
     // Auth Exception
-    INVALID_AUTH_HEADER (HttpStatus.UNAUTHORIZED, "AUTH-001", "유효하지 않은 헤더 입니다."),
-    INVALID_TOKEN_OWNER (HttpStatus.FORBIDDEN, "AUTH-002", "해당 토큰의 소유자가 아닙니다."),
-    REFRESH_NOT_FOUND   (HttpStatus.BAD_REQUEST, "AUTH-003", "Refresh 토큰이 존재하지 않습니다"),
+    INVALID_AUTH_HEADER         (HttpStatus.UNAUTHORIZED, "AUTH-001", "유효하지 않은 헤더 입니다."),
+    INVALID_TOKEN_OWNER         (HttpStatus.FORBIDDEN, "AUTH-002", "해당 토큰의 소유자가 아닙니다."),
+    REFRESH_NOT_FOUND           (HttpStatus.BAD_REQUEST, "AUTH-003", "Refresh 토큰이 존재하지 않습니다"),
+    AUTHENTICATION_REQUIRED     (HttpStatus.UNAUTHORIZED, "AUTH-004", "로그인이 필요합니다."),
+    ACCESS_DENIED               (HttpStatus.FORBIDDEN, "AUTH-005", "접근 권한이 없습니다."),
 
     // Validation Exception
     INVALID_REQUEST_VALUE           (HttpStatus.BAD_REQUEST, "VALID-001", "잘못된 요청 파라미터입니다."),
