@@ -5,12 +5,14 @@ import com.example.blogStudy.dto.response.CommentResponse;
 import com.example.blogStudy.dto.update.CommentUpdate;
 import com.example.blogStudy.entity.Comment;
 import com.example.blogStudy.entity.Post;
+import com.example.blogStudy.entity.Role;
 import com.example.blogStudy.entity.User;
 import com.example.blogStudy.exception.CustomException;
 import com.example.blogStudy.exception.ErrorCode;
 import com.example.blogStudy.repository.CommentRepository;
 import com.example.blogStudy.repository.PostRepository;
 import com.example.blogStudy.repository.UserRepository;
+import jakarta.validation.Valid;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -65,11 +67,16 @@ public class CommentService {
 
     // 댓글 수정
     @Transactional
-    public CommentResponse updateComment(String userId, Long id, CommentUpdate dto) {
+    public CommentResponse updateComment(
+            String userId,
+            Role userRole,
+            Long id,
+            CommentUpdate dto)
+    {
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
 
-        comment.validateOwner(userId); // 권한 확인
+        comment.validateOwner(userId, userRole); // 권한 확인
         comment.update(dto);
         return CommentResponse.from(comment);
     }
@@ -77,11 +84,15 @@ public class CommentService {
 
     // 댓글 삭제
     @Transactional
-    public void deleteComment(String userId, Long id) {
+    public void deleteComment(
+            String userId,
+            Role userRole,
+            Long id)
+    {
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
 
-        comment.validateOwner(userId);
+        comment.validateOwner(userId, userRole);
         commentRepository.delete(comment);
     }
 

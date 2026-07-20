@@ -45,8 +45,11 @@ public class Comment extends BaseTimeEntity {
         this.content = dto.getContent();
     }
 
-    public void validateOwner(String userId) {
-        if (!this.user.getId().equals(userId))
+    public void validateOwner(String userId, Role userRole) {
+        boolean isAdmin = this.user.getRole() == userRole;
+        boolean isOwner = this.user.getId().equals(userId);
+
+        if (!isAdmin && !isOwner)
             throw new CustomException(ErrorCode.COMMENT_FORBIDDEN);
     }
 }
