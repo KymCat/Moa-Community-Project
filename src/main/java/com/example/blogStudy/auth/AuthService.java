@@ -93,8 +93,7 @@ public class AuthService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        String role = claims.get(ROLE_TYPE, String.class);
-        Role userRole = Role.valueOf(role);
+        Role userRole = user.getRole();
 
         // 3. redis refresh token 과 비교
         if(Boolean.FALSE.equals(refreshTokenService.isValid(user.getId(), token)))

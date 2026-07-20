@@ -46,7 +46,7 @@ public class Comment extends BaseTimeEntity {
     }
 
     public void validateOwner(String userId, Role userRole) {
-        boolean isAdmin = this.user.getRole() == userRole;
+        boolean isAdmin = userRole == Role.ADMIN;
         boolean isOwner = this.user.getId().equals(userId);
 
         if (!isAdmin && !isOwner)

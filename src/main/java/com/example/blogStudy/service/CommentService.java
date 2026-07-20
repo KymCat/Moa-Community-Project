@@ -12,7 +12,6 @@ import com.example.blogStudy.exception.ErrorCode;
 import com.example.blogStudy.repository.CommentRepository;
 import com.example.blogStudy.repository.PostRepository;
 import com.example.blogStudy.repository.UserRepository;
-import jakarta.validation.Valid;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
