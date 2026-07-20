@@ -63,7 +63,7 @@ public class PostService {
 
     // 게시글 수정
     @Transactional
-    public PostResponse updatePost(String userId, String userRole, Long id, PostUpdate dto) {
+    public PostResponse updatePost(String userId, Role userRole, Long id, PostUpdate dto) {
         validatePostUpdate(dto);
 
         Post post = postRepository.findById(id)
@@ -78,7 +78,7 @@ public class PostService {
 
     // 게시글 삭제
     @Transactional
-    public void deletePost(String userId, String userRole, Long id) {
+    public void deletePost(String userId, Role userRole, Long id) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
 
@@ -149,10 +149,10 @@ public class PostService {
 
     private void checkPostOwner(
             String userId,
-            String userRole,
+            Role userRole,
             String authorUserId)
     {
-        boolean isAdmin = userRole.equals(Role.ADMIN.toString());
+        boolean isAdmin = userRole == Role.ADMIN;
         boolean isOwner = userId.equals(authorUserId);
 
         if (!isAdmin && !isOwner) {

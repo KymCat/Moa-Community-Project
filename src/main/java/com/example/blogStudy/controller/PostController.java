@@ -6,6 +6,7 @@ import com.example.blogStudy.dto.response.ApiResponse;
 import com.example.blogStudy.dto.response.PostDetailResponse;
 import com.example.blogStudy.dto.response.PostResponse;
 import com.example.blogStudy.dto.update.PostUpdate;
+import com.example.blogStudy.entity.Role;
 import com.example.blogStudy.security.CustomUserDetails;
 import com.example.blogStudy.service.PostService;
 import jakarta.validation.Valid;
@@ -73,7 +74,7 @@ public class PostController {
             @Valid @RequestBody PostUpdate dto)
     {
         String userId = userDetails.getUserId();
-        String userRole = userDetails.getUserRole();
+        Role userRole = userDetails.getUserRole();
         PostResponse updated = postService.updatePost(userId, userRole, id, dto);
 
         return ResponseEntity.ok(ApiResponse.success(updated));
@@ -86,7 +87,7 @@ public class PostController {
             @PathVariable Long id)
     {
         String userId = userDetails.getUserId();
-        String userRole = userDetails.getUserRole();
+        Role userRole = userDetails.getUserRole();
         postService.deletePost(userId, userRole, id);
 
         return ResponseEntity.noContent().build();

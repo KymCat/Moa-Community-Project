@@ -1,5 +1,6 @@
 package com.example.blogStudy.security;
 
+import com.example.blogStudy.entity.Role;
 import com.example.blogStudy.exception.CustomException;
 import com.example.blogStudy.exception.ErrorCode;
 import com.example.blogStudy.jwt.JwtProvider;
@@ -60,7 +61,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             Claims claims = jwtProvider.validateAccessToken(accessToken);
 
             String userId = claims.getSubject();
-            String userRole = claims.get(ROLE_TYPE, String.class);
+            String role = claims.get(ROLE_TYPE, String.class);
+            Role userRole = Role.valueOf(role);
 
             CustomUserDetails customUserDetails = new CustomUserDetails(userId, userRole);
 
