@@ -61,7 +61,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             String userId = claims.getSubject();
             String role = claims.get(ROLE_TYPE, String.class);
-            Role userRole = Role.valueOf(role);
+            if (role == null) {
+                throw new CustomException(ErrorCode.INVALID_TOKEN);
+            }
+
+            Role userRole;
+            try {
+                userRole = Role.valueOf(role);
+            } catch (IllegalArgumentException e) {
+                throw new CustomException(ErrorCode.INVALID_ROLE_TYPE);
+            }
 
             CustomUserDetails customUserDetails = new CustomUserDetails(userId, userRole);
 

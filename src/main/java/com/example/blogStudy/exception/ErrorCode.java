@@ -39,6 +39,7 @@ public enum ErrorCode {
     AUTHENTICATION_REQUIRED     (HttpStatus.UNAUTHORIZED, "AUTH-004", "로그인이 필요합니다."),
     ACCESS_DENIED               (HttpStatus.FORBIDDEN, "AUTH-005", "접근 권한이 없습니다."),
     CANNOT_DELETE_ADMIN         (HttpStatus.FORBIDDEN, "AUTH-006", "관리자 계정은 삭제할 수 없습니다."),
+    INVALID_ROLE_TYPE           (HttpStatus.UNAUTHORIZED, "AUTH-007", "유효하지 않은 권한 타입입니다."),
 
     // Validation Exception
     INVALID_REQUEST_VALUE           (HttpStatus.BAD_REQUEST, "VALID-001", "잘못된 요청 파라미터입니다."),
