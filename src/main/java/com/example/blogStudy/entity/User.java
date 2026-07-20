@@ -30,7 +30,7 @@ public class User {
         return create(id, password, name, Role.USER);
     }
 
-    public static User create(
+    private static User create(
             String id,
             String password,
             String name,

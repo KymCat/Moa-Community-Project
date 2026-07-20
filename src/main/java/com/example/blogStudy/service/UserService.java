@@ -114,6 +114,18 @@ public class UserService {
         updateName(user, dto.getName());
     }
 
+    @Transactional
+    public void deleteUserByAdmin(String id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        if (user.getRole() == Role.USER) {
+            throw new CustomException(ErrorCode.CANNOT_DELETE_ADMIN);
+        }
+
+        userRepository.delete(user);
+    }
+
     // ============= OVERLOADING =============
     private void updateName(User user, String newName) {
         // 기존 닉네임, 새 닉네임 비교

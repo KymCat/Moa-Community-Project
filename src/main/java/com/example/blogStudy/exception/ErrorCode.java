@@ -38,6 +38,7 @@ public enum ErrorCode {
     REFRESH_NOT_FOUND           (HttpStatus.BAD_REQUEST, "AUTH-003", "Refresh 토큰이 존재하지 않습니다"),
     AUTHENTICATION_REQUIRED     (HttpStatus.UNAUTHORIZED, "AUTH-004", "로그인이 필요합니다."),
     ACCESS_DENIED               (HttpStatus.FORBIDDEN, "AUTH-005", "접근 권한이 없습니다."),
+    CANNOT_DELETE_ADMIN         (HttpStatus.FORBIDDEN, "AUTH-006", "관리자 계정은 삭제할 수 없습니다."),
 
     // Validation Exception
     INVALID_REQUEST_VALUE           (HttpStatus.BAD_REQUEST, "VALID-001", "잘못된 요청 파라미터입니다."),
