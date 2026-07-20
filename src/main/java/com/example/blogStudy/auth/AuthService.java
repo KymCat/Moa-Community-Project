@@ -90,7 +90,9 @@ public class AuthService {
 
         // 2. dto 데이터에서 user id, role 추출
         String userId = claims.getSubject();
-        String userRole = claims.get(ROLE_TYPE, String.class);
+        String role = claims.get(ROLE_TYPE, String.class);
+        Role userRole = Role.valueOf(role);
+
         if (!userRepository.existsById(userId)) {
             throw new CustomException(ErrorCode.USER_NOT_FOUND);
         }
@@ -100,8 +102,8 @@ public class AuthService {
             throw new CustomException(ErrorCode.INVALID_TOKEN);
 
         // 4. access, refresh 재발행
-        String accessToken = jwtProvider.createAccessToken(userId, Role.valueOf(userRole));
-        String refreshToken = jwtProvider.createRefreshToken(userId, Role.valueOf(userRole));
+        String accessToken = jwtProvider.createAccessToken(userId, userRole);
+        String refreshToken = jwtProvider.createRefreshToken(userId, userRole);
 
         // 5. redis 에 저장
         refreshTokenService.save(
