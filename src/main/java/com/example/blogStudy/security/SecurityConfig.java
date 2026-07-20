@@ -51,6 +51,9 @@ public class SecurityConfig {
                                 "/auth/reissue",
                                 "/users"
                         ).permitAll()
+                        .requestMatchers(
+                                "/admin/**"
+                        ).hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 // JWT 필터를 Spring Security 필터 체인에 등록
