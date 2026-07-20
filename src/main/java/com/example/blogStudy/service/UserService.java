@@ -4,6 +4,7 @@ import com.example.blogStudy.dto.create.UserCreate;
 import com.example.blogStudy.dto.response.UserResponse;
 import com.example.blogStudy.dto.update.NameUpdate;
 import com.example.blogStudy.dto.update.PasswordUpdate;
+import com.example.blogStudy.entity.Role;
 import com.example.blogStudy.entity.User;
 import com.example.blogStudy.exception.CustomException;
 import com.example.blogStudy.exception.ErrorCode;
@@ -90,13 +91,7 @@ public class UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        String newName = dto.getName();
-
-        // 기존 닉네임, 새 닉네임 비교
-        if (newName.equals(user.getName()))
-            throw new CustomException(ErrorCode.SAME_AS_CURRENT_VALUE);
-
-        user.updateName(newName);
+        updateName(user, dto.getName());
     }
 
     // 유저 계정 삭제
@@ -107,4 +102,26 @@ public class UserService {
 
         userRepository.delete(user);
     }
+
+    // ============= ADMIN API =============
+
+    // admin 권한으로 유저 닉네임 수정
+    @Transactional
+    public void updateNameByAdmin(String id, NameUpdate dto) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        updateName(user, dto.getName());
+    }
+
+    // ============= OVERLOADING =============
+    private void updateName(User user, String newName) {
+        // 기존 닉네임, 새 닉네임 비교
+        if (newName.equals(user.getName()))
+            throw new CustomException(ErrorCode.SAME_AS_CURRENT_VALUE);
+
+        user.updateName(newName);
+    }
+
+
 }

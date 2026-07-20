@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -91,6 +92,26 @@ public class UserController {
     {
 
         String id = userDetails.getUserId();
+        userService.deleteUser(id);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    // ============= ADMIN API =============
+    @PatchMapping("/admin/users/{id}/name")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> updateNameByAdmin(
+            @PathVariable String id,
+            @Valid @RequestBody NameUpdate dto)
+    {
+        userService.updateNameByAdmin(id, dto);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/admin/users/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> deleteUserByAdmin(@PathVariable String id) {
         userService.deleteUser(id);
 
         return ResponseEntity.noContent().build();
