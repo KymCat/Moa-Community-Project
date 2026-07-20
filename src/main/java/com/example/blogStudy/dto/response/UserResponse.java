@@ -1,6 +1,5 @@
 package com.example.blogStudy.dto.response;
 
-import com.example.blogStudy.entity.Role;
 import com.example.blogStudy.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

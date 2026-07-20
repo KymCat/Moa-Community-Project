@@ -29,8 +29,6 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
 
-    private static final String ROLE_TYPE = "role";
-
     // 로그인
     @Transactional
     public JwtTokenResult login(LoginRequest dto) {
