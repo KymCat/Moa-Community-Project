@@ -10,13 +10,11 @@ import lombok.Getter;
 public class UserResponse {
     private String id;
     private String name;
-    private Role role;
 
     public static UserResponse from(User user) {
         return new UserResponse(
                 user.getId(),
-                user.getName(),
-                user.getRole()
+                user.getName()
         );
     }
 }
