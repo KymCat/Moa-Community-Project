@@ -1,5 +1,6 @@
 package com.example.blogStudy.security;
 
+import com.example.blogStudy.entity.Role;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.jspecify.annotations.Nullable;
@@ -14,11 +15,11 @@ import java.util.List;
 @AllArgsConstructor
 public class CustomUserDetails implements UserDetails {
     private final String userId;
-    private final String userRole;
+    private final Role userRole;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_" + userRole)); // role
+        return List.of(new SimpleGrantedAuthority("ROLE_" + userRole.name())); // role
     }
 
     @Override
