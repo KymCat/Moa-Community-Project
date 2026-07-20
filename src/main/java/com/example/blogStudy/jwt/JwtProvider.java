@@ -48,7 +48,7 @@ public class JwtProvider {
         return Jwts.builder()
                 .subject(userId)
                 .claim(TOKEN_TYPE, JwtTokenType.ACCESS.name())  // Token type - Access Token
-                .claim(ROLE_TYPE, role)     // Role type - 역할
+                .claim(ROLE_TYPE, role.name())     // Role type - 역할
                 .issuedAt(now)              // iat, 발급일자
                 .expiration(expiration)     // exp, 만료일자
                 .signWith(key)              // key 를 비밀키로 서명
@@ -65,7 +65,7 @@ public class JwtProvider {
         return Jwts.builder()
                 .subject(userId)            // token 주인 표시
                 .claim(TOKEN_TYPE, JwtTokenType.REFRESH.name()) // Token type - Refresh Token
-                .claim(ROLE_TYPE, role)     // Role type - 역할
+                .claim(ROLE_TYPE, role.name())     // Role type - 역할
                 .issuedAt(now)              // iat, 발급일자
                 .expiration(expiration)     // exp, 만료일자
                 .signWith(key)              // key 를 비밀키로 서명
