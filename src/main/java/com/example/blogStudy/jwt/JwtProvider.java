@@ -1,5 +1,6 @@
 package com.example.blogStudy.jwt;
 
+import com.example.blogStudy.entity.Role;
 import com.example.blogStudy.exception.CustomException;
 import com.example.blogStudy.exception.ErrorCode;
 import io.jsonwebtoken.Claims;
@@ -21,6 +22,7 @@ public class JwtProvider {
     private SecretKey key;
 
     private static final String TOKEN_TYPE = "token_type";
+    private static final String ROLE_TYPE = "role";
 
     public JwtProvider(JwtProperties jwtProperties) {
         this.jwtProperties = jwtProperties;
@@ -38,7 +40,7 @@ public class JwtProvider {
 
 
     // 사용자 Id를 받아서 Access Token 문자열을 만들어 반환
-    public String createAccessToken(String userId) {
+    public String createAccessToken(String userId, Role role) {
         Date now = new Date();  // 현재 시간
         Date expiration = new Date( // 현재 시간 + Access Token 만료 시간
                 now.getTime() + jwtProperties.getAccessTokenExpiration());
@@ -46,6 +48,7 @@ public class JwtProvider {
         return Jwts.builder()
                 .subject(userId)
                 .claim(TOKEN_TYPE, JwtTokenType.ACCESS.name())  // Token type - Access Token
+                .claim(ROLE_TYPE, role)     // Role type - 역할
                 .issuedAt(now)              // iat, 발급일자
                 .expiration(expiration)     // exp, 만료일자
                 .signWith(key)              // key 를 비밀키로 서명
@@ -54,7 +57,7 @@ public class JwtProvider {
 
 
     // 사용자 Id를 받아서 Refresh Token 문자열을 만들어 반환
-    public String createRefreshToken(String userId) {
+    public String createRefreshToken(String userId, Role role) {
         Date now = new Date();  // 현재 시간
         Date expiration = new Date( // 현재 시간 + Access Token 만료 시간
                 now.getTime() + jwtProperties.getRefreshTokenExpiration());
@@ -62,6 +65,7 @@ public class JwtProvider {
         return Jwts.builder()
                 .subject(userId)            // token 주인 표시
                 .claim(TOKEN_TYPE, JwtTokenType.REFRESH.name()) // Token type - Refresh Token
+                .claim(ROLE_TYPE, role)     // Role type - 역할
                 .issuedAt(now)              // iat, 발급일자
                 .expiration(expiration)     // exp, 만료일자
                 .signWith(key)              // key 를 비밀키로 서명

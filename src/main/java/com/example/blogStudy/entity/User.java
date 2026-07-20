@@ -18,11 +18,29 @@ public class User {
     @Column(nullable = false, length = 30)
     private String name;
 
-    public static User create(String id, String password, String name) {
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 10)
+    private Role role;
+
+    public static User create(
+            String id,
+            String password,
+            String name
+    ) {
+        return create(id, password, name, Role.USER);
+    }
+
+    public static User create(
+            String id,
+            String password,
+            String name,
+            Role role
+    ) {
         User user = new User();
         user.id = id;
         user.password = password;
         user.name = name;
+        user.role = role;
         return user;
     }
 

@@ -30,6 +30,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Qualifier("handlerExceptionResolver")
     private final HandlerExceptionResolver handlerExceptionResolver;
 
+    private static final String ROLE_TYPE = "role";
+
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
@@ -58,15 +60,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             Claims claims = jwtProvider.validateAccessToken(accessToken);
 
             String userId = claims.getSubject();
+            String userRole = claims.get(ROLE_TYPE, String.class);
 
-            CustomUserDetails customUserDetails = new CustomUserDetails(userId);
+            CustomUserDetails customUserDetails = new CustomUserDetails(userId, userRole);
 
             // Authentication 객체 생성
             UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(
                             customUserDetails,
                             null,   // Password, Jwt 인증은 필요없음
-                            AuthorityUtils.NO_AUTHORITIES   // 권한
+                            customUserDetails.getAuthorities()   // 권한
                     );
 
             // SecurityContextHolder 에 저장

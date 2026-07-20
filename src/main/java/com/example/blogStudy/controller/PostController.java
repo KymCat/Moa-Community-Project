@@ -52,8 +52,10 @@ public class PostController {
 
     // 게시글 작성
     @PostMapping("/posts")
-    public ResponseEntity<ApiResponse<PostResponse>> createPost(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                                   @Valid @RequestBody PostCreate dto) {
+    public ResponseEntity<ApiResponse<PostResponse>> createPost(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @Valid @RequestBody PostCreate dto)
+    {
 
         String userId = userDetails.getUserId();
         PostResponse created = postService.createPost(userId, dto);
@@ -65,21 +67,27 @@ public class PostController {
 
     // 게시글 수정
     @PatchMapping("/posts/{id}")
-    public ResponseEntity<ApiResponse<PostResponse>> updatePost(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                                   @PathVariable Long id,
-                                                   @Valid @RequestBody PostUpdate dto) {
+    public ResponseEntity<ApiResponse<PostResponse>> updatePost(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long id,
+            @Valid @RequestBody PostUpdate dto)
+    {
         String userId = userDetails.getUserId();
-        PostResponse updated = postService.updatePost(userId, id, dto);
+        String userRole = userDetails.getUserRole();
+        PostResponse updated = postService.updatePost(userId, userRole, id, dto);
 
         return ResponseEntity.ok(ApiResponse.success(updated));
     }
 
     // 게시글 삭제
     @DeleteMapping("/posts/{id}")
-    public ResponseEntity<Void> deletePost(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                                   @PathVariable Long id) {
+    public ResponseEntity<Void> deletePost(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long id)
+    {
         String userId = userDetails.getUserId();
-        postService.deletePost(userId, id);
+        String userRole = userDetails.getUserRole();
+        postService.deletePost(userId, userRole, id);
 
         return ResponseEntity.noContent().build();
     }

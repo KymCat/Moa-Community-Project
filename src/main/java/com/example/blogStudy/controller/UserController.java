@@ -39,7 +39,9 @@ public class UserController {
 
     // 로그인한 본인 정보 조회
     @GetMapping("/users/me")
-    public ApiResponse<UserResponse> getMe(@AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ApiResponse<UserResponse> getMe(
+            @AuthenticationPrincipal CustomUserDetails userDetails)
+    {
         UserResponse me =  userService.getMe(userDetails.getUserId());
 
         return ApiResponse.success(me);
@@ -47,7 +49,9 @@ public class UserController {
 
     // 유저 계정 생성
     @PostMapping("/users")
-    public ResponseEntity<ApiResponse<UserResponse>> createUser(@Valid @RequestBody UserCreate dto) {
+    public ResponseEntity<ApiResponse<UserResponse>> createUser(
+            @Valid @RequestBody UserCreate dto)
+    {
         UserResponse created = userService.createUser(dto);
 
         return ResponseEntity
@@ -57,8 +61,9 @@ public class UserController {
 
     // 현재 유저 비밀번호 수정
     @PatchMapping("/users/me/password")
-    public ResponseEntity<Void> updatePassword(@Valid @RequestBody PasswordUpdate dto,
-                                               @AuthenticationPrincipal CustomUserDetails userDetails)
+    public ResponseEntity<Void> updatePassword(
+            @Valid @RequestBody PasswordUpdate dto,
+            @AuthenticationPrincipal CustomUserDetails userDetails)
     {
         String id = userDetails.getUserId();
         userService.updatePassword(id, dto);
@@ -68,8 +73,9 @@ public class UserController {
 
     // 현재 유저 닉네임 수정
     @PatchMapping("/users/me/name")
-    public ResponseEntity<Void> updateName(@Valid @RequestBody NameUpdate dto,
-                                           @AuthenticationPrincipal CustomUserDetails userDetails)
+    public ResponseEntity<Void> updateName(
+            @Valid @RequestBody NameUpdate dto,
+            @AuthenticationPrincipal CustomUserDetails userDetails)
     {
 
         String id = userDetails.getUserId();
@@ -80,7 +86,9 @@ public class UserController {
 
     // 유저 계정 탈퇴
     @DeleteMapping("/users/me")
-    public ResponseEntity<Void> deleteUser(@AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ResponseEntity<Void> deleteUser(
+            @AuthenticationPrincipal CustomUserDetails userDetails)
+    {
 
         String id = userDetails.getUserId();
         userService.deleteUser(id);

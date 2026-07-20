@@ -6,6 +6,7 @@ import com.example.blogStudy.dto.response.PostDetailResponse;
 import com.example.blogStudy.dto.response.PostResponse;
 import com.example.blogStudy.dto.update.PostUpdate;
 import com.example.blogStudy.entity.Post;
+import com.example.blogStudy.entity.Role;
 import com.example.blogStudy.entity.User;
 import com.example.blogStudy.exception.CustomException;
 import com.example.blogStudy.exception.ErrorCode;
@@ -62,14 +63,14 @@ public class PostService {
 
     // 게시글 수정
     @Transactional
-    public PostResponse updatePost(String userId, Long id, PostUpdate dto) {
+    public PostResponse updatePost(String userId, String userRole, Long id, PostUpdate dto) {
         validatePostUpdate(dto);
 
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
 
-        if(!userId.equals(post.getUser().getId()))
-            throw new CustomException(ErrorCode.POST_ACCESS_DENIED);
+        String authorUserId = post.getUser().getId();
+        checkPostOwner(userId, userRole, authorUserId);
 
         post.update(dto);
         return PostResponse.from(post);
@@ -77,12 +78,12 @@ public class PostService {
 
     // 게시글 삭제
     @Transactional
-    public void deletePost(String userId, Long id) {
+    public void deletePost(String userId, String userRole, Long id) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
 
-        if(!userId.equals(post.getUser().getId()))
-            throw new CustomException(ErrorCode.POST_ACCESS_DENIED);
+        String authorUserId = post.getUser().getId();
+        checkPostOwner(userId, userRole, authorUserId);
 
         postRepository.delete(post);
     }
@@ -144,5 +145,18 @@ public class PostService {
         Page<PostResponse> result = posts.map(PostResponse::from);
 
         return new PagedModel<>(result);
+    }
+
+    private void checkPostOwner(
+            String userId,
+            String userRole,
+            String authorUserId)
+    {
+        boolean isAdmin = userRole.equals(Role.ADMIN.toString());
+        boolean isOwner = userId.equals(authorUserId);
+
+        if (!isAdmin && !isOwner) {
+            throw new CustomException(ErrorCode.POST_ACCESS_DENIED);
+        }
     }
 }

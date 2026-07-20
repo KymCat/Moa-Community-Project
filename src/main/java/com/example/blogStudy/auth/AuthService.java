@@ -1,6 +1,7 @@
 package com.example.blogStudy.auth;
 
 import com.example.blogStudy.dto.request.LoginRequest;
+import com.example.blogStudy.entity.Role;
 import com.example.blogStudy.entity.User;
 import com.example.blogStudy.exception.CustomException;
 import com.example.blogStudy.exception.ErrorCode;
@@ -28,6 +29,8 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
 
+    private static final String ROLE_TYPE = "role";
+
     // 로그인
     @Transactional
     public JwtTokenResult login(LoginRequest dto) {
@@ -40,8 +43,8 @@ public class AuthService {
             throw new CustomException(ErrorCode.INVALID_PASSWORD);
 
         // 3. 토큰 생성 (Jwt Access, Refresh)
-        String accessToken = jwtProvider.createAccessToken(user.getId());
-        String refreshToken = jwtProvider.createRefreshToken(user.getId());
+        String accessToken = jwtProvider.createAccessToken(user.getId(), user.getRole());
+        String refreshToken = jwtProvider.createRefreshToken(user.getId(), user.getRole());
 
         // 4. Refresh 토큰 Redis 에 저장
         refreshTokenService.save(
@@ -85,8 +88,9 @@ public class AuthService {
         // 1. refresh token 검증
         Claims claims = jwtProvider.validateRefreshToken(token);
 
-        // 2. dto 데이터에서 user id 추출
+        // 2. dto 데이터에서 user id, role 추출
         String userId = claims.getSubject();
+        String userRole = claims.get(ROLE_TYPE, String.class);
         if (!userRepository.existsById(userId)) {
             throw new CustomException(ErrorCode.USER_NOT_FOUND);
         }
@@ -96,8 +100,8 @@ public class AuthService {
             throw new CustomException(ErrorCode.INVALID_TOKEN);
 
         // 4. access, refresh 재발행
-        String accessToken = jwtProvider.createAccessToken(userId);
-        String refreshToken = jwtProvider.createRefreshToken(userId);
+        String accessToken = jwtProvider.createAccessToken(userId, Role.valueOf(userRole));
+        String refreshToken = jwtProvider.createRefreshToken(userId, Role.valueOf(userRole));
 
         // 5. redis 에 저장
         refreshTokenService.save(
