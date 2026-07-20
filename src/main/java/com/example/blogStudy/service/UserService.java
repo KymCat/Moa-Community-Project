@@ -100,6 +100,9 @@ public class UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
+        if (user.getRole() == Role.ADMIN){
+            throw new CustomException(ErrorCode.CANNOT_DELETE_ADMIN);
+        }
         userRepository.delete(user);
     }
 
