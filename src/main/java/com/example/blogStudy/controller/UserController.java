@@ -2,13 +2,16 @@ package com.example.blogStudy.controller;
 
 import com.example.blogStudy.dto.create.UserCreate;
 import com.example.blogStudy.dto.response.ApiResponse;
+import com.example.blogStudy.dto.response.CurrentUserResponse;
 import com.example.blogStudy.dto.response.UserResponse;
 import com.example.blogStudy.dto.update.NameUpdate;
 import com.example.blogStudy.dto.update.PasswordUpdate;
 import com.example.blogStudy.security.CustomUserDetails;
 import com.example.blogStudy.service.UserService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.web.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -22,14 +25,6 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
 
-    // 유저 전체 조회
-    @GetMapping("/users")
-    public ApiResponse<List<UserResponse>> getUsers() {
-        List<UserResponse> users = userService.getUsers();
-
-        return ApiResponse.success(users);
-    }
-
     // 해당 id 유저 조회
     @GetMapping("/users/{id}")
     public ApiResponse<UserResponse> getUserById(@PathVariable String id) {
@@ -40,10 +35,10 @@ public class UserController {
 
     // 로그인한 본인 정보 조회
     @GetMapping("/users/me")
-    public ApiResponse<UserResponse> getMe(
+    public ApiResponse<CurrentUserResponse> getMe(
             @AuthenticationPrincipal CustomUserDetails userDetails)
     {
-        UserResponse me =  userService.getMe(userDetails.getUserId());
+        CurrentUserResponse me =  userService.getMe(userDetails.getUserId());
 
         return ApiResponse.success(me);
     }
@@ -98,6 +93,19 @@ public class UserController {
     }
 
     // ============= ADMIN API =============
+
+    // admin 권한으로 유저 전체 조회
+    @GetMapping("/admin/users")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ApiResponse<PagedModel<UserResponse>> getUsers(
+            @RequestParam(defaultValue = "0") @Min(0) int page)
+    {
+        PagedModel<UserResponse> users = userService.getUsers(page);
+
+        return ApiResponse.success(users);
+    }
+
+    // admin 권한으로 유저 닉네임 수정
     @PatchMapping("/admin/users/{id}/name")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> updateNameByAdmin(
@@ -109,6 +117,7 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
+    // admin 권한으로 유저 삭제
     @DeleteMapping("/admin/users/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteUserByAdmin(@PathVariable String id) {

@@ -1,6 +1,7 @@
 package com.example.blogStudy.service;
 
 import com.example.blogStudy.dto.create.UserCreate;
+import com.example.blogStudy.dto.response.CurrentUserResponse;
 import com.example.blogStudy.dto.response.UserResponse;
 import com.example.blogStudy.dto.update.NameUpdate;
 import com.example.blogStudy.dto.update.PasswordUpdate;
@@ -12,6 +13,11 @@ import com.example.blogStudy.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PagedModel;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,14 +31,6 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    // 유저 전체 조회
-    @Transactional(readOnly = true)
-    public List<UserResponse> getUsers() {
-        return userRepository.findAll().stream()
-                .map(UserResponse::from)
-                .toList();
-    }
-
     // 해당 id 유저 조회
     @Transactional(readOnly = true)
     public UserResponse getUserById(String id) {
@@ -43,11 +41,11 @@ public class UserService {
     }
 
     // 로그인한 본인 정보 조회
-    public UserResponse getMe(String id) {
+    public CurrentUserResponse getMe(String id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        return UserResponse.from(user);
+        return CurrentUserResponse.from(user);
     }
 
     // 유저 계정 생성
@@ -108,6 +106,19 @@ public class UserService {
 
     // ============= ADMIN API =============
 
+    // 유저 전체 조회
+    @Transactional(readOnly = true)
+    public PagedModel<UserResponse> getUsers(int page) {
+        Pageable pageable = PageRequest.of(page, 15,
+                Sort.by(Sort.Order.desc("id")));
+
+        Page<User> users = userRepository.findAll(pageable);
+        Page<UserResponse> result = users.map(UserResponse::from);
+
+        return new PagedModel<>(result);
+
+    }
+
     // admin 권한으로 유저 닉네임 수정
     @Transactional
     public void updateNameByAdmin(String id, NameUpdate dto) {
@@ -117,6 +128,7 @@ public class UserService {
         updateName(user, dto.getName());
     }
 
+    // admin 권한으로 유저 삭제
     @Transactional
     public void deleteUserByAdmin(String id) {
         User user = userRepository.findById(id)
