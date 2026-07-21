@@ -19,13 +19,6 @@ phases:
     runtime-versions:
       java: corretto17
       nodejs: 22
-        - echo "Preparing Node.js 22..."
-        - npm install -g n
-        - n 22.16.0
-        - export PATH="/usr/local/bin:$PATH"
-        - hash -r
-        - node --version
-        - npm --version
 
   pre_build:
     commands:
