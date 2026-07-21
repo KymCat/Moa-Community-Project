@@ -1,0 +1,49 @@
+version: 0.2
+
+env:
+  shell: bash
+  parameter-store:
+    COOKIE_SECURE: "/COOKIE_SECURE"
+    REDIS_HOST: "/REDIS_HOST"
+    REDIS_PORT: "/REDIS_PORT"
+
+  secrets-manager:
+    DB_URL: "moa/secrets:DB_URL"
+    DB_USERNAME: "moa/secrets:DB_USERNAME"
+    DB_PASSWORD: "moa/secrets:DB_PASSWORD"
+    JWT_SECRET: "moa/secrets:JWT_SECRET"
+    COOKIE_SECURE: "moa/secrets:COOKIE_SECURE"
+
+
+phases:
+  install:
+    runtime-versions:
+      java: corretto17
+      nodejs: 22
+
+  pre_build:
+    commands:
+      - echo "Installing frontend dependencies..."
+      - cd frontend
+      - npm ci
+      - cd ..
+
+  build:
+    commands:
+      - echo "Building backend..."
+      - chmod +x gradlew
+      - ./gradlew clean booJar -x test
+      - echo "Building frontend..."
+      - cd frontend
+      - npm run build
+      - cd ..
+
+  post_build:
+    commands:
+      - echo "Build completed."
+
+artifacts:
+  files:
+    - build/libs/*.jar
+    - frontend/dist/**/*
+  discard-paths: no
