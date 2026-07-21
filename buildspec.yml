@@ -12,7 +12,6 @@ env:
     DB_USERNAME: "moa/secrets:DB_USERNAME"
     DB_PASSWORD: "moa/secrets:DB_PASSWORD"
     JWT_SECRET: "moa/secrets:JWT_SECRET"
-    COOKIE_SECURE: "moa/secrets:COOKIE_SECURE"
 
 
 phases:
