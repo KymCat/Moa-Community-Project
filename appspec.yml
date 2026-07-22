@@ -1,0 +1,24 @@
+version: 0.0
+os: linux
+
+files:
+  - source: build/libs/moa-server-api.jar
+    destination: /opt/moa-server/backend
+  - source: deploy/moa-api.service
+    destination: /etc/systemd/system
+
+file_exists_behavior: OVERWRITE
+
+hooks:
+  ApplicationStop:
+    - location: scripts/stop.sh
+      timeout: 30
+      runas: root
+  ApplicationStart:
+    - location: scripts/start.sh
+      timeout: 60
+      runas: root
+  ValidateService:
+    - location: scripts/validate.sh
+      timeout: 90
+      runas: root

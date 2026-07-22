@@ -28,7 +28,7 @@ import java.time.Duration;
 public class AuthController {
     private final AuthService authService;
 
-    @Value("${COOKIE_SECURE}")
+    @Value("${cookie.secure}")
     private boolean cookieSecure;
 
     // 로그인
