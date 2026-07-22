@@ -23,3 +23,5 @@ spring:
         show-sql: true
 cookie:
     secure: ${COOKIE_SECURE:false}
+cors:
+    allowed-origin-patterns: ${CORS_ALLOWED_ORIGINS:http://localhost:5173}
