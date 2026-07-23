@@ -6,6 +6,7 @@ import com.example.blogStudy.dto.response.ApiResponse;
 import com.example.blogStudy.dto.response.PostDetailResponse;
 import com.example.blogStudy.dto.response.PostResponse;
 import com.example.blogStudy.dto.update.PostUpdate;
+import com.example.blogStudy.entity.PostListMode;
 import com.example.blogStudy.entity.Role;
 import com.example.blogStudy.security.CustomUserDetails;
 import com.example.blogStudy.service.PostService;
@@ -35,10 +36,10 @@ public class PostController {
     // 게시글 전체 조회
     @GetMapping("/posts")
     public ApiResponse<PagedModel<PostResponse>> getPosts(
-            @PageableDefault(size = 5, sort = "createdAt", direction = Sort.Direction.DESC)
-            Pageable pageable)
+            @RequestParam(defaultValue = "0") @Min(0) int page,
+            @RequestParam(defaultValue = "ALL") PostListMode mode)
     {
-        PagedModel<PostResponse> pages = postService.getPosts(pageable);
+        PagedModel<PostResponse> pages = postService.getPosts(page, mode);
 
         return ApiResponse.success(pages);
     }
@@ -108,13 +109,13 @@ public class PostController {
 
     // 마이페이지 본인 게시글 조회
     @GetMapping("/posts/me")
-    public ApiResponse<PagedModel<PostResponse>> getMyPosts(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                               @RequestParam(defaultValue = "0") @Min(0) int page)
+    public ApiResponse<PagedModel<PostResponse>> getMyPosts(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestParam(defaultValue = "0") @Min(0) int page)
     {
         String userId = userDetails.getUsername();
         PagedModel<PostResponse> pages = postService.getMyPosts(userId, page);
 
         return ApiResponse.success(pages);
     }
-
 }

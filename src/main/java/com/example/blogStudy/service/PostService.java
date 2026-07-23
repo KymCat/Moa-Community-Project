@@ -6,6 +6,7 @@ import com.example.blogStudy.dto.response.PostDetailResponse;
 import com.example.blogStudy.dto.response.PostResponse;
 import com.example.blogStudy.dto.update.PostUpdate;
 import com.example.blogStudy.entity.Post;
+import com.example.blogStudy.entity.PostListMode;
 import com.example.blogStudy.entity.Role;
 import com.example.blogStudy.entity.User;
 import com.example.blogStudy.exception.CustomException;
@@ -33,10 +34,20 @@ public class PostService {
 
 
     // 게시글 전체 조회
-    public PagedModel<PostResponse> getPosts(Pageable pageable) {
-        return new PagedModel<>(
-                postRepository.findAllWithUser(pageable)
-                        .map(PostResponse::from));
+    public PagedModel<PostResponse> getPosts(int page, PostListMode mode) {
+        Pageable pageable = PageRequest.of(page, 5);
+        Page<PostResponse> pages;
+
+        if (mode == PostListMode.RECOMMEND) {
+            pages = postRepository.findRecommendPost(pageable)
+                    .map(PostResponse::from);
+        }
+        else {
+            pages = postRepository.findAllWithUser(pageable)
+                    .map(PostResponse::from);
+        }
+
+        return new PagedModel<>(pages);
     }
 
     // 게시글 단일 조회
