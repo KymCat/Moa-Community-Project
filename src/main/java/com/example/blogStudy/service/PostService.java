@@ -11,6 +11,7 @@ import com.example.blogStudy.entity.Role;
 import com.example.blogStudy.entity.User;
 import com.example.blogStudy.exception.CustomException;
 import com.example.blogStudy.exception.ErrorCode;
+import com.example.blogStudy.repository.CommentRepository;
 import com.example.blogStudy.repository.LikeRepository;
 import com.example.blogStudy.repository.PostRepository;
 import com.example.blogStudy.repository.UserRepository;
@@ -23,35 +24,41 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Service;
 
-
 @Service
 @RequiredArgsConstructor
 public class PostService {
 
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final CommentRepository commentRepository;
     private final LikeRepository likeRepository;
 
 
     // 게시글 전체 조회
     @Transactional(readOnly = true)
-    public PagedModel<PostResponse> getPosts(int page, PostListMode mode) {
+    public PagedModel<PostDetailResponse> getPosts(int page, PostListMode mode) {
         Pageable pageable;
-        Page<PostResponse> pages;
+        Page<Post> pages;
 
         if (mode == PostListMode.RECOMMEND) {
             pageable = PageRequest.of(page, 5);
-            pages = postRepository.findRecommendPost(pageable)
-                    .map(PostResponse::from);
+            pages = postRepository.findRecommendPost(pageable);
         }
         else {
             pageable = PageRequest.of(page, 5,
                     Sort.by(Sort.Order.desc("createdAt")));
-            pages = postRepository.findAllWithUser(pageable)
-                    .map(PostResponse::from);
+            pages = postRepository.findAllWithUser(pageable);
         }
 
-        return new PagedModel<>(pages);
+        Page<PostDetailResponse> result =
+                pages.map(post -> {
+                    long commentCount = commentRepository.countByPostId(post.getId());
+                    long likeCount = likeRepository.countByPostId(post.getId());
+
+                    return PostDetailResponse.from(post, commentCount, likeCount);
+                });
+
+        return new PagedModel<>(result);
     }
 
     // 게시글 단일 조회
@@ -61,9 +68,10 @@ public class PostService {
                 .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
 
         // 좋아요 갯수 가져오기
-        int likeCount = likeRepository.countByPostId(id);
+        long commentCount = commentRepository.countByPostId(id);
+        long likeCount = likeRepository.countByPostId(id);
 
-        return PostDetailResponse.from(post, likeCount);
+        return PostDetailResponse.from(post, commentCount, likeCount);
     }
 
     // 게시글 작성

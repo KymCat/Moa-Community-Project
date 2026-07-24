@@ -32,11 +32,11 @@ public class PostController {
 
     // 게시글 전체 조회
     @GetMapping("/posts")
-    public ApiResponse<PagedModel<PostResponse>> getPosts(
+    public ApiResponse<PagedModel<PostDetailResponse>> getPosts(
             @RequestParam(defaultValue = "0") @Min(0) int page,
             @RequestParam(defaultValue = "ALL") PostListMode mode)
     {
-        PagedModel<PostResponse> pages = postService.getPosts(page, mode);
+        PagedModel<PostDetailResponse> pages = postService.getPosts(page, mode);
 
         return ApiResponse.success(pages);
     }
