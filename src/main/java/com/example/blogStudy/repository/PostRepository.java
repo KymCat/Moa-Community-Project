@@ -35,6 +35,7 @@ public interface PostRepository extends JpaRepository<Post, Long>, PostSearchRep
             value = """
                 SELECT p
                 FROM Post p
+                JOIN FETCH p.user
                 WHERE (
                     SELECT COUNT(l.id)
                     FROM Like l

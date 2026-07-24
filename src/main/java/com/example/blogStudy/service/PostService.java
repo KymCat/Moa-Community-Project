@@ -34,8 +34,10 @@ public class PostService {
 
 
     // 게시글 전체 조회
+    @Transactional(readOnly = true)
     public PagedModel<PostResponse> getPosts(int page, PostListMode mode) {
-        Pageable pageable = PageRequest.of(page, 5);
+        Pageable pageable = PageRequest.of(page, 5,
+                Sort.by(Sort.Order.desc("createdAt")));
         Page<PostResponse> pages;
 
         if (mode == PostListMode.RECOMMEND) {
