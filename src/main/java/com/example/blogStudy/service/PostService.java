@@ -72,10 +72,10 @@ public class PostService {
                 .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
 
         // 좋아요 갯수 가져오기
-        long countCount = commentRepository.countByPostId(id);
+        long commentCount = commentRepository.countByPostId(id);
         long likeCount = likeRepository.countByPostId(id);
 
-        return PostDetailResponse.from(post, countCount, likeCount);
+        return PostDetailResponse.from(post, commentCount, likeCount);
     }
 
     // 게시글 작성
