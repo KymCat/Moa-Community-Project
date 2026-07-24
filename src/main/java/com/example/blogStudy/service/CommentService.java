@@ -36,9 +36,9 @@ public class CommentService {
     public PagedModel<CommentResponse> getComments(Long postId, int page) {
         Pageable pageable = PageRequest.of(
                 page,
-                3,
+                10,
                 Sort.by(
-                        Sort.Order.desc("createdAt")
+                        Sort.Order.asc("createdAt")
                 ));
 
         // Page => PagedModel : Page 타입보다 안정적인 구조인 PagedModel 반환 권장

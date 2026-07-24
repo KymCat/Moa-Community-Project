@@ -1,6 +1,7 @@
 package com.example.blogStudy.dto.response;
 
 import com.example.blogStudy.entity.Comment;
+import com.example.blogStudy.entity.Role;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -14,6 +15,7 @@ public class CommentResponse {
     private LocalDateTime createdAt;
     private String user_id;
     private String name;
+    private Role role;
     private Long post_id;
 
     public static CommentResponse from(Comment comment) {
@@ -23,6 +25,7 @@ public class CommentResponse {
           comment.getCreatedAt(),
           comment.getUser().getId(),
           comment.getUser().getName(),
+          comment.getUser().getRole(),
           comment.getPost().getId()
         );
     }

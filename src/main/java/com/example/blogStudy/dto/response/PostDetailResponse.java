@@ -1,6 +1,7 @@
 package com.example.blogStudy.dto.response;
 
 import com.example.blogStudy.entity.Post;
+import com.example.blogStudy.entity.Role;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -16,6 +17,7 @@ public class PostDetailResponse {
     private LocalDateTime updatedAt;
     private String userId;
     private String name;
+    private Role role;
 
     private long commentCount;
     private long likeCount;
@@ -29,6 +31,7 @@ public class PostDetailResponse {
                 post.getUpdatedAt(),
                 post.getUser().getId(),
                 post.getUser().getName(),
+                post.getUser().getRole(),
                 commentCount,
                 likeCount
         );

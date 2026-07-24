@@ -1,6 +1,7 @@
 package com.example.blogStudy.dto.response;
 
 import com.example.blogStudy.entity.Post;
+import com.example.blogStudy.entity.Role;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -16,6 +17,7 @@ public class PostResponse {
     private LocalDateTime updatedAt;
     private String userId;
     private String name;
+    private Role role;
 
     // Entity -> DTO
     public static PostResponse from(Post post) {
@@ -26,7 +28,8 @@ public class PostResponse {
                 post.getCreatedAt(),
                 post.getUpdatedAt(),
                 post.getUser().getId(), // 엔티티 에서 필요한 정보만
-                post.getUser().getName()
+                post.getUser().getName(),
+                post.getUser().getRole()
         );
     }
 
