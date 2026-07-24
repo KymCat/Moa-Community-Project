@@ -29,4 +29,29 @@ public interface PostRepository extends JpaRepository<Post, Long>, PostSearchRep
             countQuery = "SELECT COUNT(p) FROM Post p WHERE p.user.id = :userId"
     )
     Page<Post> findByUserId(@Param("userId") String userId, Pageable pageable);
+
+    // 개념글 게시글 검색
+    @Query(
+            value = """
+                SELECT p
+                FROM Post p
+                JOIN FETCH p.user
+                WHERE (
+                    SELECT COUNT(l.id)
+                    FROM Like l
+                    WHERE l.post.id = p.id
+                ) >= 5
+                ORDER BY p.createdAt DESC
+                """,
+            countQuery = """
+                SELECT COUNT(p.id)
+                FROM Post p
+                WHERE (
+                    SELECT COUNT(l.id)
+                    FROM Like l
+                    WHERE l.post.id = p.id
+                ) >= 5
+                """
+    )
+    Page<Post> findRecommendPost(Pageable pageable);
 }
