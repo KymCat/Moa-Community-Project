@@ -36,15 +36,17 @@ public class PostService {
     // 게시글 전체 조회
     @Transactional(readOnly = true)
     public PagedModel<PostResponse> getPosts(int page, PostListMode mode) {
-        Pageable pageable = PageRequest.of(page, 5,
-                Sort.by(Sort.Order.desc("createdAt")));
+        Pageable pageable;
         Page<PostResponse> pages;
 
         if (mode == PostListMode.RECOMMEND) {
+            pageable = PageRequest.of(page, 5);
             pages = postRepository.findRecommendPost(pageable)
                     .map(PostResponse::from);
         }
         else {
+            pageable = PageRequest.of(page, 5,
+                    Sort.by(Sort.Order.desc("createdAt")));
             pages = postRepository.findAllWithUser(pageable)
                     .map(PostResponse::from);
         }
