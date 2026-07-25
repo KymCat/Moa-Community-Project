@@ -5,7 +5,7 @@ import com.example.blogStudy.entity.Role;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Getter
 @AllArgsConstructor
@@ -13,8 +13,8 @@ public class PostDetailResponse {
     private Long id;
     private String title;
     private String content;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private Instant createdAt;
+    private Instant updatedAt;
     private String userId;
     private String name;
     private Role role;
