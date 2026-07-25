@@ -13,6 +13,7 @@ public class CommentResponse {
     private Long id;
     private String content;
     private Instant createdAt;
+    private Instant updatedAt;
     private String user_id;
     private String name;
     private Role role;
@@ -23,6 +24,7 @@ public class CommentResponse {
           comment.getId(),
           comment.getContent(),
           comment.getCreatedAt(),
+          comment.getUpdatedAt(),
           comment.getUser().getId(),
           comment.getUser().getName(),
           comment.getUser().getRole(),
