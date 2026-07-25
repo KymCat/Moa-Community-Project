@@ -19,6 +19,8 @@ spring:
             ddl-auto: update
         properties:
             hibernate:
+                jdbc:
+                    time_zone: UTC
                 format_sql: true
         show-sql: true
 cookie:

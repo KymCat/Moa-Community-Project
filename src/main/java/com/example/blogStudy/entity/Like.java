@@ -2,11 +2,10 @@ package com.example.blogStudy.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Entity
 @Getter
@@ -23,7 +22,7 @@ public class Like {
     private Long id;
 
     @Column(nullable = false)
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 
     // FK
     @ManyToOne(fetch = FetchType.LAZY)
@@ -37,7 +36,7 @@ public class Like {
 
     public static Like create(User user, Post post) {
         Like like = new Like();
-        like.createdAt =  LocalDateTime.now();
+        like.createdAt =  Instant.now();
         like.user = user;
         like.post = post;
 
