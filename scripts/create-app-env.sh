@@ -98,4 +98,4 @@ for key in "${REQUIRED_KEYS[@]}"; do
   fi
 done
 
-chown root:root "$TEMP_ENV_FILE
+chown root:root "$TEMP_ENV_FILE"
