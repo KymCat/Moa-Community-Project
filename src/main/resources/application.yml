@@ -23,6 +23,12 @@ spring:
                     time_zone: UTC
                 format_sql: true
         show-sql: true
+    vapid:
+        public:
+            ${VAPID_PUBLIC}
+        private:
+            ${VAPID_PRIVATE}
+
 cookie:
     secure: ${COOKIE_SECURE:false}
 cors:
