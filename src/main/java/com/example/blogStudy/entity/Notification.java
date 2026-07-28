@@ -1,6 +1,5 @@
 package com.example.blogStudy.entity;
 
-import com.example.blogStudy.entity.base.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
