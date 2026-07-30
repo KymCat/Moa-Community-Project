@@ -33,7 +33,7 @@ public interface NotificationRepository
             Pageable pageable);
 
     Optional<Notification> findByIdAndReceiverId(
-            String id,
+            Long id,
             String userId);
 
     long countByReceiverIdAndReadAtIsNull(String userId);
