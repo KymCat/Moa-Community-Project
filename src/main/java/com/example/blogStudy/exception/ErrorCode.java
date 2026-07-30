@@ -47,7 +47,7 @@ public enum ErrorCode {
     INVALID_REQUEST_PARAM_MISSING   (HttpStatus.BAD_REQUEST, "VALID-003", "누락된 요청 파라미터가 있습니다."),
 
     // Web Push Notification Exception
-    NOTIFICATION_NOT_FOUND  (HttpStatus.NOT_FOUND, "NOTIFICATION-001", "해당 아림을 찾을 수 없습니다."),
+    NOTIFICATION_NOT_FOUND  (HttpStatus.NOT_FOUND, "NOTIFICATION-001", "해당 알림을 찾을 수 없습니다."),
 
     // System Exception
     INTERNAL_SERVER_ERROR
