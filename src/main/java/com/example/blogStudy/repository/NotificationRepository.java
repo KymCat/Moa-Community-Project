@@ -22,11 +22,13 @@ public interface NotificationRepository
                     JOIN FETCH c.user 
                     JOIN FETCH c.post
                     WHERE n.receiver.id = :userId
+                    AND n.readAt IS NULL
                     """,
             countQuery = """                   
                         SELECT COUNT(n)
                         FROM Notification n
                         WHERE n.receiver.id = :userId
+                        AND n.readAt IS NULL
                         """
     )
     Page<Notification> findAllByReceiverId(
@@ -51,6 +53,6 @@ public interface NotificationRepository
     int markAllAsRead(
             @Param("userId") String userId,
             @Param("readAt") Instant readAt
-            );
+    );
 
 }
