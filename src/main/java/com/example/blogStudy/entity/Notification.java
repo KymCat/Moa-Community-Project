@@ -48,7 +48,7 @@ public class Notification {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "receiver_id", nullable = false)
-    private User user;
+    private User receiver;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "comment_id", nullable = false)
@@ -56,7 +56,7 @@ public class Notification {
 
     public static Notification create(User user, Comment comment) {
         Notification nf = new Notification();
-        nf.user = user;
+        nf.receiver = user;
         nf.comment = comment;
 
         return nf;
