@@ -29,6 +29,7 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
     private final PostRepository postRepository;
+    private final NotificationService notificationService;
 
 
     // id 해당 게시글 댓글 조회
@@ -60,6 +61,9 @@ public class CommentService {
 
         Comment comment = dto.toEntity(user, post);
         commentRepository.save(comment);
+
+        notificationService.createCommentNotification(comment);
+
         return CommentResponse.from(comment);
     }
 
