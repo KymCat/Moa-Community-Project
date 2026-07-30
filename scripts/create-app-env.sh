@@ -102,3 +102,10 @@ for key in "${REQUIRED_KEYS[@]}"; do
 done
 
 chown root:root "$TEMP_ENV_FILE"
+chmod 600 "$TEMP_ENV_FILE"
+
+# 검증을 통과한 임시 파일로 기존 app.env 교체
+mv -f "$TEMP_ENV_FILE" "$APP_ENV_FILE"
+trap - EXIT
+
+echo "app.env 생성 완료: $APP_ENV_FILE"
