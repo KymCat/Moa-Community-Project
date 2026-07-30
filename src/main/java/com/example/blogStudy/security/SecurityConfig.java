@@ -50,6 +50,10 @@ public class SecurityConfig {
                                 "/users"
                         ).permitAll()
                         .requestMatchers(
+                                HttpMethod.GET,
+                                "/push-subscriptions/public-key"
+                        ).permitAll()
+                        .requestMatchers(
                                 "/admin/**"
                         ).hasRole("ADMIN")
                         .anyRequest().authenticated()

@@ -2,22 +2,29 @@ package com.example.blogStudy.controller;
 
 import com.example.blogStudy.dto.request.PushSubscriptionDeleteRequest;
 import com.example.blogStudy.dto.request.PushSubscriptionRequest;
+import com.example.blogStudy.dto.response.ApiResponse;
+import com.example.blogStudy.dto.response.VapidPublicKeyResponse;
 import com.example.blogStudy.security.CustomUserDetails;
 import com.example.blogStudy.service.PushSubscriptionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
 public class PushSubscriptionController {
 
     private final PushSubscriptionService pushSubscriptionService;
+
+    @GetMapping("/public-key")
+    public ApiResponse<VapidPublicKeyResponse> getPublicKey() {
+        VapidPublicKeyResponse result =
+                pushSubscriptionService.getPublicKey();
+
+        return ApiResponse.success(result);
+    }
 
     @PutMapping("/push-subscriptions")
     public ResponseEntity<Void> subscribe(

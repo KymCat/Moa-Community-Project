@@ -1,6 +1,7 @@
 package com.example.blogStudy.service;
 
 import com.example.blogStudy.dto.request.PushSubscriptionRequest;
+import com.example.blogStudy.dto.response.VapidPublicKeyResponse;
 import com.example.blogStudy.entity.PushSubscription;
 import com.example.blogStudy.entity.User;
 import com.example.blogStudy.exception.CustomException;
@@ -8,6 +9,7 @@ import com.example.blogStudy.exception.ErrorCode;
 import com.example.blogStudy.repository.PushSubscriptionRepository;
 import com.example.blogStudy.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +25,9 @@ public class PushSubscriptionService {
 
     private final PushSubscriptionRepository pushSubscriptionRepository;
     private final UserRepository userRepository;
+
+    @Value("${web-push.vapid.public-key}")
+    private String vapidPublicKey;
 
     @Transactional
     public void subscribe(
@@ -107,5 +112,10 @@ public class PushSubscriptionService {
                     exception
             );
         }
+    }
+
+    @Transactional(readOnly = true)
+    public VapidPublicKeyResponse getPublicKey() {
+        return new VapidPublicKeyResponse(vapidPublicKey);
     }
 }
