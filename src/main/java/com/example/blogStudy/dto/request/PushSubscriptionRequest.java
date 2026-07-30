@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor
 @AllArgsConstructor
 public class PushSubscriptionRequest {
 
@@ -28,7 +29,7 @@ public class PushSubscriptionRequest {
         @NotBlank
         @Size(max = 128)
         @Pattern(regexp = "^[A-Za-z0-9_-]+$")
-        private String p256h;
+        private String p256dh;
 
         @NotBlank
         @Size(max = 64)

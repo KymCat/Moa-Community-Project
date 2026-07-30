@@ -8,7 +8,6 @@ import com.example.blogStudy.exception.ErrorCode;
 import com.example.blogStudy.repository.PushSubscriptionRepository;
 import com.example.blogStudy.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +23,6 @@ public class PushSubscriptionService {
 
     private final PushSubscriptionRepository pushSubscriptionRepository;
     private final UserRepository userRepository;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Transactional
     public void subscribe(
@@ -47,7 +45,7 @@ public class PushSubscriptionService {
                 .ifPresentOrElse(
                         subscription -> subscription.update(
                                 user,
-                                request.getKeys().getP256h(),
+                                request.getKeys().getP256dh(),
                                 request.getKeys().getAuth()
                         ),
                         () -> pushSubscriptionRepository.save(
@@ -55,7 +53,7 @@ public class PushSubscriptionService {
                                         user,
                                         endpoint,
                                         endpointHash,
-                                        request.getKeys().getP256h(),
+                                        request.getKeys().getP256dh(),
                                         request.getKeys().getAuth()
                                 )
                         )
