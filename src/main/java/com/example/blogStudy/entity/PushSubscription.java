@@ -30,8 +30,7 @@ public class PushSubscription  extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Lob
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String endpoint;
 
     @Column(name = "endpoint_hash", nullable = false, length = 64)
