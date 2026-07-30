@@ -1,11 +1,12 @@
 package com.example.blogStudy.repository;
 
 import com.example.blogStudy.entity.Notification;
-import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.Instant;
 import java.util.Optional;
@@ -19,7 +20,7 @@ public interface NotificationRepository
                     FROM Notification n
                     JOIN FETCH n.comment c
                     JOIN FETCH c.user 
-                    JOIN FETCH c. post
+                    JOIN FETCH c.post
                     WHERE n.receiver.id = :userId
                     """,
             countQuery = """                   
@@ -38,6 +39,7 @@ public interface NotificationRepository
 
     long countByReceiverIdAndReadAtIsNull(String userId);
 
+    @Modifying(clearAutomatically = true)
     @Query(
             value = """
                     UPDATE Notification n
