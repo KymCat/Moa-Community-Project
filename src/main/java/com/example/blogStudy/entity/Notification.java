@@ -39,11 +39,11 @@ public class Notification {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "read_at", nullable = false)
+    @Column(name = "read_at")
     private Instant readAt;
 
     @CreatedDate
-    @Column(name = "created_at", updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
