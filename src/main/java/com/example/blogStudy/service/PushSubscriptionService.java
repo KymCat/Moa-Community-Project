@@ -17,7 +17,6 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HexFormat;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -95,12 +94,14 @@ public class PushSubscriptionService {
     private String hashEndpoint(String endpoint) {
         try {
             MessageDigest digest =
-                    MessageDigest.getInstance("SHA-256");
+                    MessageDigest.getInstance("SHA-256"); // 32 byte
 
             byte[] hash = digest
                     .digest(endpoint.getBytes(StandardCharsets.UTF_8));
 
-            return HexFormat.of().formatHex(hash);
+            return HexFormat.of().formatHex(hash);  // DB에 저장하기 쉬운 16진수 문자열변경
+            // 16진수 두글자로 표현 : 32 byte * 2 = 64 글자
+            // 따라서 엔티티 endpointHash는 length 64로 된다.
 
         } catch (NoSuchAlgorithmException exception) {
             throw new IllegalStateException(
