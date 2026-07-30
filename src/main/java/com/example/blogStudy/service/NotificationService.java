@@ -5,10 +5,12 @@ import com.example.blogStudy.dto.response.UnreadNotificationCountResponse;
 import com.example.blogStudy.entity.Comment;
 import com.example.blogStudy.entity.Notification;
 import com.example.blogStudy.entity.User;
+import com.example.blogStudy.event.CommentNotificationCreatedEvent;
 import com.example.blogStudy.exception.CustomException;
 import com.example.blogStudy.exception.ErrorCode;
 import com.example.blogStudy.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +26,7 @@ import java.time.Instant;
 public class NotificationService {
 
     private final NotificationRepository notificationRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional(readOnly = true)
     public PagedModel<NotificationResponse> getNotifications(
@@ -80,7 +83,17 @@ public class NotificationService {
 
         Notification notification =
                 Notification.create(receiver, comment);
-
         notificationRepository.save(notification);
+
+        CommentNotificationCreatedEvent event =
+                new CommentNotificationCreatedEvent(
+                        notification.getId(),
+                        receiver.getId(),
+                        comment.getPost().getId(),
+                        commenter.getName(),
+                        comment.getContent()
+                );
+
+        eventPublisher.publishEvent(event);
     }
 }
