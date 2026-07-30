@@ -18,7 +18,7 @@ public class PushSubscriptionController {
 
     private final PushSubscriptionService pushSubscriptionService;
 
-    @GetMapping("/public-key")
+    @GetMapping("/push-subscriptions/public-key")
     public ApiResponse<VapidPublicKeyResponse> getPublicKey() {
         VapidPublicKeyResponse result =
                 pushSubscriptionService.getPublicKey();
